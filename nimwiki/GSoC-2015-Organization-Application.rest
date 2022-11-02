@@ -1,0 +1,53 @@
+Organization administrators
+  - Dennis Felsing
+  - Andreas Rumpf
+
+Organization name
+  Nim Programming Language
+
+Description
+  Nim is a statically typed programming language which compiles primarily to C and has an excellent performance/productivity ratio. Nim's design focuses on efficiency, expressiveness, elegance.
+
+  Nim performs well in benchmarks, offers powerful metaprogramming capabilities and is easy to write, leaning on Python syntactically.
+
+Tags
+  programming language, language, statically typed, high performance, compiler, metaprogramming
+
+If you did not choose "veteran" in the checkbox, have you applied in the past? If so, for what year(s)?
+  Yes, for 2014.
+
+If you chose "veteran" in the checkbox, please summarize your involvement in Google Summer of Code and the successes and challenges of your participation. Please also list your pass/fail rate for each year. 
+  Not applicable
+
+Why is your organization applying to participate in Google Summer of Code 2015? What do you hope to gain by participating?
+  Nim has been gaining popularity significantly in the last year, but we're still a comparatively small programming language. Participating in GSoC would have an enormous effect for us.
+
+  We hope to give students a chance to get a deeper look into Nim and learn a lot. Working on a new compiler and programming language can be very educational. The interesting projects will also benefit the Nim community. GSoC students should afterwards be ready to keep contributing to the Nim compiler and/or language ecosystem.
+
+How many potential mentors do you have for this year's program? What criteria did you use to select them?
+  3 mentors.
+
+  We picked motivated mentors with experience and a deep insight into Nim and their respective GSoC ideas. As the main mentor I (Dennis Felsing) have many years of experience teaching and tutoring university students in programming and computer science.
+
+What is your plan for dealing with disappearing students?
+  This should be avoided from the start by explaining to the student thoroughly and making sure that the student understands what to do.
+
+  By regularly interacting with the student and getting feedback from both sides, problems can be avoided early. I believe this will significantly reduce the risk of a student disappearing.
+
+What is your plan for dealing with disappearing mentors?
+  Our mentors are core members of the community, including Andreas Rumpf, the author of the Nim programming language. As all mentors are heavily invested into Nim, it is highly doubtful that anyone would disappear. Upon the disappearance of a mentor, another mentor or core contributor could replace them.
+
+What steps will you take to encourage students to interact with your project's community before and during the program?
+  We're asking students to join our IRC channel and discuss potential ideas with us. It's very important for us to get in touch with students before in order to find a fitting project for each student and help with their independent research beforehand. During the program we also expect the students to continuously interact with us via IRC.
+
+What will you do to encourage your accepted students to stick with the project after Google Summer of Code concludes?
+  Firstly we will make sure that students enjoy their GSoC with Nim, by being patient with students and at the same time giving them the opportunity to show their true talents. At the end of the summer we will propose ideas of further improving their GSoC work and other potential projects with Nim.
+
+Are you a new organization who has a Googler or other organization to vouch for you? If so, please list their name(s) here.
+  Shalabh Chaturvedi (Googler)
+
+Are you an established or larger organization who would like to vouch for a new organization applying this year? If so, please list their name(s) here.
+  Not applicable.
+
+Is there anything else we should know or you'd like to tell us that doesn't fit anywhere else on the application?
+  Thanks for doing GSoC! We're all excited about this opportunity.

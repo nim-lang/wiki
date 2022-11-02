@@ -1,0 +1,23 @@
+This is an introductory page on use cases where you might want to use Nim.
+
+### Where Nim works well
+
+Multiarch applications:: As Nim compiles through GCC, any architecture supported by GCC can run Nim.
+
+Gaming:: Nim was designed with gaming in mind. See documentation regarding speed and GC. 
+
+Embedded systems and microcontrollers:: Nim have some of the smallest memory overhead and binary size compared to other languages.
+
+### Where Nim will work well
+
+The following use case might require larger amounts of libraries, tools, and language maturity in general (as in early 2015)
+
+System libraries:: Nim can produce libraries to be used by other languages (https://gradha.github.io/articles/2015/01/writing-c-libraries-with-nim.html[docs], https://akehrer.github.io/posts/connecting-nim-to-python/[example])
+
+Cryptography:: Nim is safer than C [also see System libraries]
+
+### Where Nim might not be the best fit
+
+Scripts and interactive use:: Nim is a complied languages and the interactive interpreter is somewhat limited.
+
+Beginners:: as a first language, Nim is more complex than Python or Ruby

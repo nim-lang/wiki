@@ -1,0 +1,54 @@
+Ok, so your nice Nim program crashes under various hard-to-reproduce conditions. What can you do about that?
+
+Generally speaking the most important question when you have a corruption is **what piece of code wrote to this memory location**. This question is answered by *watchpoints*, breakpoints are mostly useless for this. In general I found breakpoints only useful to set *watchpoints* in them.
+
+Classical debugging
+===================
+
+Use ``--debugger:native`` and use GDB or LLDB or Visual Studio for debugging. Note that currently local variables are mangled and a ``0`` is attached to the name. 
+
+Test with different GCs
+=======================
+
+* ``--gc:boehm``
+* ``--gc:refc``
+* ``--gc:markAndSweep``
+
+Note that if your program does not crash with a different GC, it doesn't imply you found a GC bug! It's just a weak indicator.
+
+Test under different OSes
+=========================
+
+* Linux
+* MacOS X
+* Windows
+
+Test under different CPUs
+=========================
+
+* i386 (32bit)
+* amd64 (64bit)
+* arm
+
+Test different compiler options
+===============================
+
+``-d:release`` vs debug mode is the obvious choice, but the Nim GC, allocator and standard library have many more checks you can should enable:
+
+``-d:useSysAssert``
+  enables assertions in the system.nim, especially in Nim's allocator.
+``-d:useGcAssert``
+   enables assertions in Nim's GC.
+``-d:nimBurnFree``
+   overwrite deallocated memory with 0xff bytes so that "access after free" triggers a segfault.
+``--tlsEmulation:on|off```
+  turn "thread local storage emulation on/off". This is helpful when you do have an issue in a threaded program. As I recently learned, the fact that TLS is cleaned at thread exit is often an overlooked cause for crashes. TLS is *unsafer* than global storage in this respect.
+
+Edit lib/system/mmdisp.nim and gc.nim
+=====================================
+
+Even more debugging options can be enabled by editing ``lib/system/mmdisp.nim``. Most of these have no ``--define`` equivalent, unfortunately.
+
+One problem with corruptions is their non-deterministic nature, in particular heap and stack addresses change from run to run. Define ``-d:corruption`` to enable "cell IDs", so that every "cell" (that is every ``ref``/``string``/``seq``) gets a unique ID. It's often interesting to see if the corrupted cell has the same ID from run to run or if it differs. If it differs the bug is non-deterministic. Within the GC ``writeCell`` can be used to output offending cells.
+
+

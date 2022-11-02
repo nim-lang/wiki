@@ -1,0 +1,71 @@
+The first thing you need to do is import the sockets module<br>
+<code>import sockets</code><br>
+Then you need to create and initialize a TSocket object<br>
+<code>var s: TSocket = socket()</code><br>
+After that you can use <code>s.connect("addr", TPort(80))</code> to connect to a server<br>
+Once you connect to a server, you can send and receive messages to/from the server by using <code>s.send("Message")</code> to send, and <code>s.recv()</code> to receive.
+
+<pre>
+import sockets, strutils
+
+when not defined(strutils.toStringSep):
+    proc toStringSep(x: int64): string = 
+        var s = $x
+        result = ""
+        var j = 0
+        for i in countdown(len(s)-1, 0): 
+            inc(j)
+            if j == 4: 
+                result = ',' & result 
+                j = 0
+            result = s[i] & result
+
+proc toMiB(size: int64): int64 =
+    return size div 1024 div 1024
+
+proc formatSize(size: int64): string =
+    var gigabytes: int64 = size div 1024 div 1024 div 1024
+    var megabytes: int64 = size.toMiB()
+    var kilobytes: int64 = size div 1024
+    if gigabytes != 0:
+        return toStringSep(gigabytes) & "GB"
+    elif megabytes != 0:
+        return toStringSep(megabytes) & "MB"
+    elif kilobytes != 0:
+        return toStringSep(kilobytes) & "KB"
+    else:
+        return toStringSep(size) & "B"
+
+var s = socket()
+
+s.connect("irc.freenode.net", TPort(6667))
+
+s.send("NICK NimrodBot\c\L")
+s.send("USER NimrodBot * 0 :IRC Bot programmed in Nimrod!\c\L")
+
+while True:
+  var data: string = ""
+  discard s.recvLine(data)
+  echo(data)
+  if data.split()[0] == "PING":
+    s.send("PONG " & data.split()[1] & "\c\L")
+  if data.split()[1] == "001":
+    s.send("JOIN #nimrod\c\L")
+  if data.split()[1] == "PRIVMSG":
+    if data.split()[3] == ":!about":
+      var msg = "NimrodBot 0.1 compiled on " & CompileDate & " " & CompileTime
+      msg.add(" running on " & hostOS)
+      s.send("PRIVMSG " & data.split()[2] & " :" & msg & "\c\L")
+
+    elif data.split()[3] == ":!mem":
+      var msg = "Occupied memory: " & formatSize(int64(getOccupiedMem()))
+      s.send("PRIVMSG " & data.split()[2] & " :" & msg & "\c\L")
+
+    elif data.split()[3] == ":!freemem":
+      var msg = "Free memory: " & formatSize(int64(getFreeMem()))
+      s.send("PRIVMSG " & data.split()[2] & " :" & msg & "\c\L")
+
+    elif data.split()[3] == ":!totalmem":
+      var msg = "Total memory: " & formatSize(int64(getTotalMem()))
+      s.send("PRIVMSG " & data.split()[2] & " :" & msg & "\c\L")
+</pre>

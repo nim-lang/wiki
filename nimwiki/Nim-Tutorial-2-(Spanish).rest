@@ -1,0 +1,697 @@
+======================
+Nim Tutorial (Part II)
+======================
+
+:Author: Andreas Rumpf
+:Translator: Durden Tyler
+
+.. contents::
+
+
+Intro
+=====
+
+  "La repetición hace que lo ridículo sea razonable". - Norman Wildberger
+
+Este documento es un tutorial para las construcciones avanzadas de Nim. 
+Tenga en cuenta que este documento es algo obsoleto ya que el manual 
+contiene muchos más ejemplos del lenguaje.
+
+
+Pragmas
+=======
+
+Los pragmas son el método de Nim para dar al compilador información/comandos adicionales
+sin introducir una gran cantidad de nuevas palabras clave. Los pragmas son
+entre-corchetes especiales ``{.`` y ``.}``. Este tutorial no cubre los pragmas. 
+Consulte el manual o la guía del usuario para obtener una descripción de los pragmas.
+
+
+Programación orientada a objetos
+================================
+
+Si bien el soporte de Nim para la programación orientada a objetos (OOP) es minimalista,
+se pueden utilizar potentes técnicas de programación orientada a objetos. 
+OOP se ve como *una* forma de diseñar un programa, no *la única* forma. 
+A menudo, un enfoque procedimental conduce a código más eficiente. 
+En particular, preferir la composición a la herencia suele ser el mejor diseño.
+
+
+Herencia
+--------
+
+La herencia en Nim es completamente opcional. Para habilitar la herencia con
+información del tipo de tiempo de ejecución del que el objeto necesita heredar
+``RootObj``. Esto se puede hacer directa o indirectamente heredando de un objeto que hereda de ``RootObj``. 
+Generalmente los tipos con herencia también se marcan como tipos ``ref`` aunque
+esto no se aplica estrictamente. Para comprobar en tiempo de ejecución si un objeto es de cierta
+tipo, se puede utilizar el operador ``of``.
+
+.. code-block:: nim
+
+  type
+    Person = ref object of RootObj
+      name*: string  # the * means that `name` is accessible from other modules
+      age: int       # no * means that the field is hidden from other modules
+
+    Student = ref object of Person # Student inherits from Person
+      id: int                      # with an id field
+
+  var
+    student: Student
+    person: Person
+  assert(student of Student) # is true
+  # object construction:
+  student = Student(name: "Anton", age: 5, id: 2)
+  echo student[]
+
+La herencia se realiza con la sintaxis de ``object of``. La herencia múltiple
+actualmente no es compatible. Si un tipo de objeto no tiene un objeto base adecuado, ``RootObj``
+se puede utilizar como su base, pero esto es solo una convención. Objetos que no tienen
+ningúna base es implícitamente ``final``. Puede utilizar el pragma ``inheritable``
+para introducir nuevas raíces de objetos además de ``system.RootObj``. 
+(Esto se usa en el wrapper GTK, por ejemplo)
+
+Los objetos de referencia deben usarse siempre que se use la herencia. No es estrictamente
+necesario, pero con asignaciones de objetos no ref como ``let person: Person =
+Student(id: 123)`` truncará los campos de subclase.
+
+**Nota**: La composición (es *tiene-una*) es a menudo preferible a la herencia
+(*es-una*) para la reutilización de código simple. 
+Dado que los objetos son tipos por valor en
+Nim, la composición es tan eficaz como la herencia.
+
+
+Tipos mutuamente recursivos
+---------------------------
+
+Los objetos, tuplas y referencias pueden modelar estructuras de datos bastante complejas que
+dependen unos de otros; son *mutuamente recursivos*. En Nim
+estos tipos solo pueden declararse dentro de una única sección de tipos. (Algo más
+requeriría una búsqueda anticipada de símbolos arbitraria que ralentiza la compilación).
+
+Ejemplo:
+
+.. code-block:: nim
+
+  type
+    Node = ref object  # a reference to an object with the following field:
+      le, ri: Node     # left and right subtrees
+      sym: ref Sym     # leaves contain a reference to a Sym
+
+    Sym = object       # a symbol
+      name: string     # the symbol's name
+      line: int        # the line the symbol was declared in
+      code: Node       # the symbol's abstract syntax tree
+
+
+Conversiones de tipos
+---------------------
+
+Nim distingue entre Type Cast y Type Conversion.
+Las conversiones se realizan con el operador ``cast`` y obligan al compilador a
+interpretar un patrón de bits como de otro tipo.
+
+Las conversiones de tipos son una forma mucho más educada de convertir un tipo en otro:
+Conservan el *valor* abstracto, no necesariamente el *patrón de bits*. Si un
+la conversión de tipo no es posible, el compilador se queja o hay una excepción.
+
+La sintaxis para type conversion es ``destination_type(expression_to_convert)``:
+
+.. code-block:: nim
+
+  proc getID(x: Person): int =
+    Student(x).id
+
+
+``InvalidObjectConversionDefect`` sera la exception lanzada si ``x`` no es un ``Student``.
+
+
+Variantes de objeto
+-------------------
+
+A menudo, una jerarquía de objetos es excesiva en determinadas situaciones en las que
+se necesitan tipos variantes (Object Variant).
+
+Un ejemplo:
+
+.. code-block:: nim
+
+  # This is an example how an abstract syntax tree could be modelled in Nim
+  type
+    NodeKind = enum  # the different node types
+      nkInt,          # a leaf with an integer value
+      nkFloat,        # a leaf with a float value
+      nkString,       # a leaf with a string value
+      nkAdd,          # an addition
+      nkSub,          # a subtraction
+      nkIf            # an if statement
+    Node = ref object
+      case kind: NodeKind  # the ``kind`` field is the discriminator
+      of nkInt: intVal: int
+      of nkFloat: floatVal: float
+      of nkString: strVal: string
+      of nkAdd, nkSub:
+        leftOp, rightOp: Node
+      of nkIf:
+        condition, thenPart, elsePart: Node
+
+  var n = Node(kind: nkFloat, floatVal: 1.0)
+  # the following statement raises an `FieldDefect` exception, because
+  # n.kind's value does not fit:
+  n.strVal = ""
+
+
+Como se puede ver en el ejemplo, una ventaja de una jerarquía de objetos es que
+no se necesita conversión entre diferentes tipos de objetos. Sin embargo, el acceso a campos inválidos
+de objeto generan una excepción.
+
+
+Sintaxis de llamada a método
+----------------------------
+
+Hay un azúcar sintáctico (Syntax Sugar) para llamar rutinas:
+Se puede utilizar la sintaxis ``obj.method(args)`` en lugar de ``method(obj, args)``.
+
+Si no usa argumentos, se pueden omitir los paréntesis:
+``obj.len`` en lugar de ``len(obj)``.
+
+Esta sintaxis de llamada al método no está restringida a objetos, se puede utilizar
+para cualquier tipo:
+
+.. code-block:: nim
+
+  import strutils
+
+  echo "abc".len # is the same as echo len("abc")
+  echo "abc".toUpperAscii()
+  echo({'a', 'b', 'c'}.card)
+  stdout.writeLine("Hallo") # the same as writeLine(stdout, "Hallo")
+
+
+(Otra forma de ver la sintaxis de llamada a método es que proporciona la notación postfija)
+
+Así que el código "puramente orientado a objetos" es fácil de escribir:
+
+.. code-block:: nim
+
+  import strutils, sequtils
+
+  stdout.writeLine("Give a list of numbers (separated by spaces): ")
+  stdout.write(stdin.readLine.splitWhitespace.map(parseInt).max.`$`)
+  stdout.writeLine(" is the maximum!")
+
+
+Propiedades
+-----------
+
+Como muestra el ejemplo anterior, Nim no necesita *get-properties* (Getters)
+
+Procedimientos de obtención ordinarios (Getters) se llaman con la sintaxis de llamada a método logran lo mismo. 
+Pero establecer un valor es diferente; para esto una sintaxis especial de Setter es necesario:
+
+.. code-block:: nim
+
+  type
+    Socket* = ref object of RootObj
+      h: int # cannot be accessed from the outside of the module due to missing star
+
+  proc `host=`*(s: var Socket, value: int) {.inline.} =
+    ## setter of host address
+    s.h = value
+
+  proc host*(s: Socket): int {.inline.} =
+    ## getter of host address
+    s.h
+
+  var s: Socket
+  new s
+  s.host = 34  # same as `host=`(s, 34)
+
+  
+El ejemplo también muestra procedimientos "en-línea" (Inlined).
+
+El operador de acceso ``[]`` se puede sobrecargar para proporcionar propiedades de la matriz:
+
+.. code-block:: nim
+
+  type
+    Vector* = object
+      x, y, z: float
+
+  proc `[]=`* (v: var Vector, i: int, value: float) =
+    # setter
+    case i
+    of 0: v.x = value
+    of 1: v.y = value
+    of 2: v.z = value
+    else: assert(false)
+
+  proc `[]`* (v: Vector, i: int): float =
+    # getter
+    case i
+    of 0: result = v.x
+    of 1: result = v.y
+    of 2: result = v.z
+    else: assert(false)
+
+
+El ejemplo es tonto, ya que un vector se modela mejor con una tupla que 
+ya proporciona acceso ``v[]``.
+
+
+Despacho dinámico
+-----------------
+
+Los procedimientos siempre utilizan el envío estático.
+Para el envío dinámico, reemplace la palabra clave ``proc`` por ``method``:
+
+.. code-block:: nim
+
+  type
+    Expression = ref object of RootObj ## abstract base class for an expression
+    Literal = ref object of Expression
+      x: int
+    PlusExpr = ref object of Expression
+      a, b: Expression
+
+  # watch out: 'eval' relies on dynamic binding
+  method eval(e: Expression): int {.base.} =
+    # override this base method
+    quit "to override!"
+
+  method eval(e: Literal): int = e.x
+  method eval(e: PlusExpr): int = eval(e.a) + eval(e.b)
+
+  proc newLit(x: int): Literal = Literal(x: x)
+  proc newPlus(a, b: Expression): PlusExpr = PlusExpr(a: a, b: b)
+
+  echo eval(newPlus(newPlus(newLit(1), newLit(2)), newLit(4)))
+
+
+Tenga en cuenta que en el ejemplo los constructores ``newLit`` y ``newPlus`` son ``proc``
+porque tiene más sentido para ellos usar enlaces estáticos, pero ``eval`` es un
+método porque requiere un enlace dinámico.
+
+**Nota:** A partir de Nim 0.20, para usar Multi-métodos, uno debe pasar explícitamente
+``--multimethods:on`` al compilar.
+
+En un método múltiple, todos los parámetros que tienen un tipo de objeto se utilizan para despacho:
+
+  
+.. code-block:: nim
+
+  type
+    Thing = ref object of RootObj
+    Unit = ref object of Thing
+      x: int
+
+  method collide(a, b: Thing) {.inline.} =
+    quit "to override!"
+
+  method collide(a: Thing, b: Unit) {.inline.} =
+    echo "1"
+
+  method collide(a: Unit, b: Thing) {.inline.} =
+    echo "2"
+
+  var a, b: Unit
+  new a
+  new b
+  collide(a, b) # output: 2
+
+
+Como demuestra el ejemplo, la invocación de un método múltiple no puede ser ambigua:
+Se prefiere colisionar 2 a colisionar 1 porque la resolución funciona de izquierda a derecha.
+derecho. Por lo tanto, se prefiere ``Unit, Thing`` (Unidad, Cosa) a ``Thing, Unit`` (Cosa, Unidad).
+
+**Nota de rendimiento**: Nim no produce una tabla de método virtual, pero
+genera árboles de despacho. Esto evita la costosa rama indirecta del método.
+y habilita la inserción. 
+Sin embargo, otras optimizaciones como evaluacion en tiempo de compilación no funcionan con métodos.
+
+
+Excepciones
+===========
+
+En Nim, las excepciones son objetos. Por convención, los tipos de excepción son
+con el sufijo "Error". El módulo `system` define una jerarquía de excepciones. 
+Las excepciones se derivan de ``system.Exception``, que proporciona una interfaz común.
+
+Las excepciones deben asignarse en el Heap porque se desconoce su duración.
+El compilador evitará la creacion de una excepción creada en el Stack.
+Todas las excepciones planteadas deberían al menos especificar la razón por la que se plantearon en
+el campo ``msg``.
+
+Una convención es que deben plantearse excepciones en casos *excepcionales*,
+no deben utilizarse como método alternativo de control de flujo.
+
+raise
+-----
+
+La creación de una excepción se hace con la declaración ``raise``:
+
+.. code-block:: nim
+
+  var
+    e: ref OSError
+  new(e)
+  e.msg = "the request to the OS failed"
+  raise e
+
+
+Si la palabra clave ``raise`` no va seguida de una expresión, la última excepción
+es *re-raised*. Con el fin de evitar repetir este patrón de código común,
+el template ``newException`` en el módulo ``system`` se puede utilizar:
+
+.. code-block:: nim
+
+  raise newException(OSError, "the request to the OS failed")
+
+
+Try
+---
+
+El ``try`` maneja excepciónes:
+
+.. code-block:: nim
+
+  from strutils import parseInt
+
+  # read the first two lines of a text file that should contain numbers
+  # and tries to add them
+  var
+    f: File
+  if open(f, "numbers.txt"):
+    try:
+      let a = readLine(f)
+      let b = readLine(f)
+      echo "sum: ", parseInt(a) + parseInt(b)
+    except OverflowDefect:
+      echo "overflow!"
+    except ValueError:
+      echo "could not convert string to integer"
+    except IOError:
+      echo "IO error!"
+    except:
+      echo "Unknown exception!"
+      # reraise the unknown exception:
+      raise
+    finally:
+      close(f)
+
+
+Las declaraciones después del ``try`` se ejecutan a menos que se haga una excepción.
+Luego se ejecuta la parte apropiada ``except``.
+
+El ``except`` vacio se ejecuta si hay una excepción que no es enumerada explícitamente. 
+Es similar a un ``else`` en un ``if``.
+
+Si hay una parte ``finally``, siempre se ejecuta después de todo.
+
+La excepción se *consume* en una parte ``except``. Si una excepción no es
+manejada, se propaga a través de la pila de funciones (Call Stack). Esto significa que a menudo
+el resto del procedimiento que no está dentro de una cláusula de ``finally``
+no se ejecuta (si ocurre una excepción).
+
+Si necesita *acceder* al objeto o mensaje de la excepción real dentro de una
+rama ``except`` puede usar ``getCurrentException()`` y ``getCurrentExceptionMsg()``
+de ``system``. Ejemplo:
+
+.. code-block:: nim
+
+  try:
+    doSomethingHere()
+  except:
+    let
+      e = getCurrentException()
+      msg = getCurrentExceptionMsg()
+    echo "Got exception ", repr(e), " with message ", msg
+
+
+Anotando proc con excepciones
+-----------------------------
+
+Mediante el uso del pragma opcional ``{.raises.}`` puede especificar que un
+proc está destinado a generar un conjunto específico de excepciones, o ninguna en absoluto. Si
+se usa pragma ``{.raises.}``, el compilador verificará que esto sea cierto. por
+Por ejemplo, si especifica que un proc genera ``IOError``, y en algún momento
+comienza a generar una nueva excepción el compilador evitarra que ese proc se compile. 
+Ejemplo de uso:
+
+.. code-block:: nim
+
+  proc complexProc() {.raises: [IOError, ArithmeticDefect].} =
+    ...
+
+  proc simpleProc() {.raises: [].} =
+    ...
+
+
+Una vez que tenga un código como este, si la lista de excepciones planteadas cambia
+el compilador se detendrá con un error al especificar la línea del proceso que
+dejó de validar el pragma y la excepción generada no se capturó, junto
+con el archivo y la línea donde se genera la excepción no detectada, que puede
+ayudarlo a localizar el código infractor que ha cambiado.
+
+Si desea agregar el pragma ``{.raises.}`` a código existente, el compilador puede
+también ayudar. Puede agregar la declaración pragma ``{.effects.}`` a su proc y
+el compilador generará todos los efectos inferidos hasta ese punto, el seguimiento de excepciónes (Exception-Tracking)
+es parte del sistema de efectos (Side-Effects) de Nim. Otra forma más indirecta de
+averiguar la lista de excepciones planteadas por un proc es utilizar el comando de terminal ``doc`` de Nim
+que genera documentación para un módulo completo y decora todos proc con la lista de excepciones planteadas. 
+Puedes leer más sobre el sistema de efectos y pragmas relacionados en el manual de Nim.
+
+
+Genéricos
+=========
+
+Los genéricos son los medios de Nim para parametrizar procesos, iteradores o tipos
+con tipos de parámetros. Los parámetros genéricos se escriben dentro de un corchetes cuadrados, 
+por ejemplo, ``Foo[T]``. Son útiles para tipos eficientes de contenedores Type-Safe.
+
+.. code-block:: nim
+
+  type
+    BinaryTree*[T] = ref object # BinaryTree is a generic type with
+                                # generic param ``T``
+      le, ri: BinaryTree[T]     # left and right subtrees; may be nil
+      data: T                   # the data stored in a node
+
+  proc newNode*[T](data: T): BinaryTree[T] =
+    # constructor for a node
+    new(result)
+    result.data = data
+
+  proc add*[T](root: var BinaryTree[T], n: BinaryTree[T]) =
+    # insert a node into the tree
+    if root == nil:
+      root = n
+    else:
+      var it = root
+      while it != nil:
+        # compare the data items; uses the generic ``cmp`` proc
+        # that works for any type that has a ``==`` and ``<`` operator
+        var c = cmp(it.data, n.data)
+        if c < 0:
+          if it.le == nil:
+            it.le = n
+            return
+          it = it.le
+        else:
+          if it.ri == nil:
+            it.ri = n
+            return
+          it = it.ri
+
+  proc add*[T](root: var BinaryTree[T], data: T) =
+    # convenience proc:
+    add(root, newNode(data))
+
+  iterator preorder*[T](root: BinaryTree[T]): T =
+    # Preorder traversal of a binary tree.
+    # This uses an explicit stack (which is more efficient than
+    # a recursive iterator factory).
+    var stack: seq[BinaryTree[T]] = @[root]
+    while stack.len > 0:
+      var n = stack.pop()
+      while n != nil:
+        yield n.data
+        add(stack, n.ri)  # push right subtree onto the stack
+        n = n.le          # and follow the left pointer
+
+  var
+    root: BinaryTree[string] # instantiate a BinaryTree with ``string``
+  add(root, newNode("hello")) # instantiates ``newNode`` and ``add``
+  add(root, "world")          # instantiates the second ``add`` proc
+  for str in preorder(root):
+    stdout.writeLine(str)
+
+
+El ejemplo muestra un árbol binario genérico. Dependiendo del contexto, los corchetes son
+utilizados para introducir parámetros de tipo o para instanciar un proc genérico. 
+Como muestra el ejemplo, los genéricos funcionan con sobrecarga: 
+Se utiliza la mejor coincidencia de ``add``. 
+El proc de ``add`` incorporado para secuencias no está oculto y se usa en el iterador ``preorder``.
+
+Hay una sintaxis especial "[: T]" cuando se utilizan genéricos con la sintaxis de llamada a método:
+
+.. code-block:: nim
+
+  proc foo[T](i: T) =
+    discard
+
+  var i: int
+
+  # i.foo[int]() # Error: expression 'foo(i)' has no type (or is ambiguous)
+
+  i.foo[:int]() # Success
+
+
+Templates
+=========
+
+Los templates son un mecanismo de sustitución simple que opera en 
+árboles de sintaxis abstracta (AST) de Nim. Las plantillas se procesan en el paso semántico del
+compilador. Se integran bien con el resto del idioma y no comparten ninguna
+de las fallas de macros del preprocesador de C.
+
+Para *invocar* un template, llámalo como un procedimiento.
+
+Ejemplo:
+
+.. code-block:: nim
+
+  template `!=` (a, b: untyped): untyped =
+    # this definition exists in the System module
+    not (a == b)
+
+  assert(5 != 6) # the compiler rewrites that to: assert(not (5 == 6))
+
+  
+Los operadores ``!=``, ``>``, ``>=``, ``in``, ``notin``, ``isnot`` son templates: 
+
+Esto tiene el beneficio de que si sobrecarga el operador ``==``,
+el operador ``!=`` está disponible automáticamente y hace lo correcto. 
+(Excepto para números de coma flotante IEEE: NaN rompe la lógica booleana básica).
+
+``a > b`` se transforma en ``b < a``.
+``a in b`` se transforma en ``contains(b, a)``.
+``notin`` y ``isnot`` tienen los significados obvios.
+
+Los templates son especialmente útiles para fines de evaluación Lazy:
+
+.. code-block:: nim
+
+  const
+    debug = true
+
+  proc log(msg: string) {.inline.} =
+    if debug: stdout.writeLine(msg)
+
+  var
+    x = 4
+  log("x has the value: " & $x)
+
+  
+Este código tiene una deficiencia: si ``debug`` es falso algún día, 
+¡Las costosas operaciones ``$`` y ``&`` todavía se realizan! 
+
+Convertir el proceso ``log`` en un template resuelve este problema:
+
+.. code-block:: nim
+
+  const
+    debug = true
+
+  template log(msg: string) =
+    if debug: stdout.writeLine(msg)
+
+  var
+    x = 4
+  log("x has the value: " & $x)
+
+
+Los tipos de parámetros pueden ser tipos ordinarios o metatipos ``untyped``,
+``typed`` o ``type``. ``type`` sugiere que solo se puede dar un símbolo de tipo
+como argumento, y ``untyped`` significa que las búsquedas de símbolos y la resolución de tipos no son
+realizado antes de que la expresión se pase al template.
+
+Si el template no tiene un tipo de retorno explícito,
+``void`` se utiliza para mantener la coherencia con los procesos y métodos.
+
+Para pasar un bloque de codigo como argumento a un template, use ``untyped`` para el último parámetro:
+
+.. code-block:: nim
+
+  template withFile(f: untyped, filename: string, mode: FileMode,
+                    body: untyped) =
+    let fn = filename
+    var f: File
+    if open(f, fn, mode):
+      try:
+        body
+      finally:
+        close(f)
+    else:
+      quit("cannot open: " & fn)
+
+  withFile(txt, "ttempl3.txt", fmWrite):
+    txt.writeLine("line 1")
+    txt.writeLine("line 2")
+
+
+En el ejemplo, las dos declaraciones ``writeLine`` están vinculadas al parametro ``body``. 
+El template ``withFile`` contiene código repetitivo y ayuda a
+evitar un error común: olvidar cerrar el archivo. Note como
+la declaración ``let fn = filename`` garantiza que solo se evalúe ``filename`` una vez.
+
+Ejemplo: Lifting Proc
+---------------------
+
+.. code-block:: nim
+
+  import math
+
+  template liftScalarProc(fname) =
+    ## Lift a proc taking one scalar parameter and returning a
+    ## scalar value (eg ``proc sssss[T](x: T): float``),
+    ## to provide templated procs that can handle a single
+    ## parameter of seq[T] or nested seq[seq[]] or the same type
+    ##
+    ## .. code-block:: Nim
+    ##  liftScalarProc(abs)
+    ##  # now abs(@[@[1,-2], @[-2,-3]]) == @[@[1,2], @[2,3]]
+    proc fname[T](x: openarray[T]): auto =
+      var temp: T
+      type outType = typeof(fname(temp))
+      result = newSeq[outType](x.len)
+      for i in 0..<x.len:
+        result[i] = fname(x[i])
+
+  liftScalarProc(sqrt)   # make sqrt() work for sequences
+  echo sqrt(@[4.0, 16.0, 25.0, 36.0])   # => @[2.0, 4.0, 5.0, 6.0]
+
+
+Compilar a JavaScript
+=====================
+
+El código Nim se puede compilar a JavaScript. Sin embargo, para escribir
+código compatible con JavaScript, debe recordar lo siguiente:
+
+- ``addr`` y ``ptr`` tienen un significado semántico ligeramente diferente en JavaScript.
+   Se recomienda evitarlos si no está seguro de cómo se traducen.
+- ``cast[T](x)`` en JavaScript se traduce a ``(x)``, excepto para el casting
+   entre enteros signed/unsigned, en cuyo caso se comporta como una cast estático en C.
+- ``cstring`` en JavaScript significa string de JavaScript. Es una buena práctica
+   usar ``cstring`` solo cuando sea semánticamente apropiado. Por ejemplo no use
+   ``cstring`` como búfer de datos binarios.
+
+
+
+
+- `Tutorial 1 en Espanol <https://github.com/nim-lang/Nim/wiki/Nim-Tutorial-1-(Spanish)>`_
+- `Continuar leyendo Nim para desarrolladores Python. <https://github.com/nim-lang/Nim/wiki/Nim-for-Python-Programmers-ES#tabla-de-contenidos>`_
+- `Continuar leyendo Nim para desarrolladores JavaScript (en Ingles). <https://github.com/nim-lang/Nim/wiki/Nim-for-TypeScript-Programmers#table-of-contents>`_
+- `Usar Nim desde el navegador en el Nim Playground. <https://play.nim-lang.org>`_
+- `Aprende Nim en 5 Minutos <https://github.com/nim-lang/Nim/wiki/Aprende-Nim-en-5-Minutos>`_

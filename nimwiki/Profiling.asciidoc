@@ -1,0 +1,17 @@
+Embedded Stack Trace Profiler: http://nim-lang.org/docs/estp.html
+
+==== Profiling Nim with Valgrind
+
+[source,bash]
+----
+# build your application as:
+nim --debugger:native c application.nim
+
+# profile calls with:
+valgrind --tool=callgrind ./application
+
+# terminate the application and visualize the calls with:
+callgrind_annotate callgrind.out.<pid>
+
+
+----

@@ -1,0 +1,25 @@
+=== Nim contributors, users and user groups.
+
+Please add yourself to the list below. If the country/city you are in is not in the list, please add a paragraph. In countries having multiple cities with the same name (like the US), use "<country>, <region>, <city>".
+Please keep the entries in alphabetical order.
+
+List yourself as: <name> [email:<email_address>] [irc:<nickname@server>] [anything else]
+
+'''
+
+=== Ireland, Dublin
+
+* federico3
+* strcmp
+
+=== UK, Belfast
+
+* dom96
+
+=== US, Atlanta
+
+* flaviu
+
+=== Belarus, Minsk
+
+* avsej

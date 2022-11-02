@@ -1,0 +1,86 @@
+== Security
+
+:toc: right
+
+NOTE: The page is Work In Progress
+
+This page documents security aspects of Nim and best practices.
+
+Security features in the language:
+
+* No pointer arithmetic
+* http://nim-lang.org/docs/manual.html#taint-mode[Taint mode]
+* The http://nim-lang.org/docs/manual.html#effect-system[Effect system] can be used for security
+* Nim attempts to generate C code that does not rely on unsecure function/patterns (e.g. unchecked strcpy)
+* The language encourage using immutable and const values
+* Type conversions are memory-safe
+* Low-level memory access allows mlock (TODO: add example) and memory wipe (TODO: add example)
+* http://nim-lang.org/docs/manual.html#types-memory-regions[Memory regions] TODO
+
+=== Compiling with GCC on Linux
+
+Nim attempts to generate C code that does not rely on unsecure function/patterns.
+As such, some of the options listed below might be less useful than when building pure-C applications.
+
+
+All the following options enabled together:
+
+[source,bash]
+----
+--passC:"-fPIE -Wformat -Wformat-security -D_FORTIFY_SOURCE=2 -O1 -fstack-protector-all" --passL:"-fPIE -pie -z relro -z now"
+----
+
+Same entries for nim.cfg:
+[source,ini]
+----
+gcc.options.always = "-w -D_FORTIFY_SOURCE=2 -O1 -Wformat -Wformat-security -fPIE -fstack-protector-all" 
+gcc.options.linker = "-ldl -fPIE -pie -z relro -z now" 
+----
+
+
+==== Stack protector
+Terminate execution when the stack is being overwritten
+
+[source,bash]
+----
+nim c --passC:"-fstack-protector-all"
+----
+
+==== Protect againt fixed-size buffer overflow
+
+[source,bash]
+----
+nim c --passC:"-D_FORTIFY_SOURCE=2 -O1"
+----
+
+==== Warn on unsecure prinf usage
+
+
+[source,bash]
+----
+nim c --passC:"-Wformat -Wformat-security"
+----
+
+==== Position independent executable
+
+Enable ASLR
+
+[source,bash]
+----
+nim c --passC:"-fPIE" --passL:"-fPIE -pie"
+----
+
+==== Full RELRO
+
+Resolve dynamic symbols at startup and flag the GOT as read-only.
+
+[source,bash]
+----
+nim c --passL:"-z relro -z now"
+----
+
+
+
+=== Resources
+
+https://wiki.debian.org/Hardening
