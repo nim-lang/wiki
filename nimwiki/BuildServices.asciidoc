@@ -1,0 +1,718 @@
+:toc: left
+:sectnums:
+
+## Building Nim projects on commercial CI systems
+
+Building your code on CI is useful to check regressions against the master and devel branches of Nim.
+Same for your code documentation.
+
+There are 3 most common ways to install Nim:
+
+* Pulling the Debian packages: fastest and most secure; requires keeping the .deb file URL up to date
+* Using a Docker image: slower but requires little maintenance
+* Using choosenim: slow when compiling Nim from sources
+
+
+.Table CI services comparison
+|===
+|Service |Linux |OSX | Android |Windows 
+|TravisCI |✅ |✅ |❌ |✅ 
+|CircleCI |✅ |"coming soon"? |❌ |✅ 
+|github action |✅ |✅ |"ARM"? |✅ 
+|===
+
+
+## Github Actions
+
+For building a nimble application with an executable named `hello_world`.  The built executable will be available in the `release` artifact.  See https://github.com/hiteshjasani/nim-hello-world[nim-hello-world] for an example project.
+
+### Github Actions using jiro4989/setup-nim-action
+
+[source,yaml]
+----
+name: BuildAndTest
+
+on: [push]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: jiro4989/setup-nim-action@v1
+        with:
+          nim-version: '1.6.0'
+      - run: nimble build -y
+      - run: nimble test -y
+----
+
+### Github Actions using a container
+
+[source,yaml]
+----
+name: Build
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: nimlang/nim
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build project
+      run: |
+        nimble build -y
+        mkdir -p artifacts
+        mv REPLACEME artifacts/
+    - name: Upload artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: REPLACEME
+        path: artifacts
+----
+
+### Github Actions using choosenim
+
+[source,yaml]
+----
+name: Build
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Cache choosenim
+      id: cache-choosenim
+      uses: actions/cache@v1
+      with:
+        path: ~/.choosenim
+        key: ${{ runner.os }}-choosenim-1.0.2
+    - name: Cache nimble
+      id: cache-nimble
+      uses: actions/cache@v1
+      with:
+        path: ~/.nimble
+        key: ${{ runner.os }}-nimble-1.0.2
+    - name: Install Nim
+      if: steps.cache-choosenim.outputs.cache-hit != 'true' || steps.cache-nimble.outputs.cache-hit != 'true'
+      run: |
+        export CHOOSENIM_CHOOSE_VERSION="1.0.2"
+        curl https://nim-lang.org/choosenim/init.sh -sSf > init.sh
+        sh init.sh -y
+    - name: Build project
+      run: |
+        export PATH=$HOME/.nimble/bin:$PATH
+        echo $PATH
+        nimble build -y
+        mkdir -p rel
+        mv hello_world rel/
+    - name: Upload artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: release
+        path: rel
+----
+
+## Circle CI
+
+The Nim docker image contains the latest version.
+
+Use this .circleci/config.yml
+
+[source,yaml]
+----
+version: 2
+jobs:
+  build:
+    docker:
+      - image: nimlang/nim
+    steps:
+      - run: echo 'export PATH=~/.nimble/bin:$PATH' >> $BASH_ENV
+      - checkout
+      # Reuse cached directories
+      - restore_cache:
+          key: nim-0000
+      - run:
+          command: |
+            # Example: adding OS libraries
+            apt-get update
+            apt-get install -y --no-install-recommends libsodium23
+      - save_cache:
+          key: nim-0000
+          paths:
+            - .nimble
+      - run: nimble build -y
+      - run: nim c -r <mytest.nim>
+      - store_artifacts:
+          path: test-reports/
+          destination: tr1
+      - store_test_results:
+          path: test-reports/
+----
+
+## Building Nim projects on Circle CI v2.0 with Docker
+
+On Circle CI 2.0 you can use Docker containers to perform builds. The following example is taken from the following guide and builds against the current Nim version on both Ubuntu and Alpine Linux: https://www.euantorano.co.uk/posts/nim-circle-ci/[Continuous Integration for Nim using Circle CI]
+
+[source,yaml]
+----
+version: 2
+jobs:
+  build:
+    working_directory: /usr/src/dotenv
+    docker:
+      - image: nimlang/nim
+    branches:
+      only:
+        - master
+    steps:
+      - checkout
+      - run:
+          name: test
+          command: nim c -r tests/main.nim
+  build_alpine:
+    working_directory: /usr/src/dotenv
+    docker:
+      - image: nimlang/nim:alpine
+    branches:
+      only:
+        - master
+    steps:
+      - checkout
+      - run:
+          name: test
+          command: nim c -r tests/main.nim
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - build_alpine
+----
+
+## Building Nim projects on Travis CI
+
+### Using Docker
+[source,yaml]
+----
+sudo: required
+services:
+  - docker
+before_install:
+  - docker pull nimlang/nim
+script:
+  - docker run nimlang/nim nim --version
+  - docker run -v "$(pwd):/project" -w /project nimlang/nim sh -c "nimble install -dy && nimble test"
+#  - docker run -v "$(pwd):/project" -w /project nimlang/nim sh -c "find src/ -name '*.nim' -type f -exec nim doc {} \;"
+----
+
+Uncomment the last line to test embedded `runnableExamples` blocks.
+
+### Using choosenim
+
+[source,yaml]
+----
+language: c
+
+cache: ccache
+cache:
+  directories:
+  - .cache
+
+matrix:
+  include:
+    # Build and test against the master (stable) and devel branches of Nim
+    - os: linux
+      env: CHANNEL=stable
+      compiler: gcc
+
+    - os: linux
+      env: CHANNEL=devel
+      compiler: gcc
+
+    # On OSX we only test against clang (gcc is mapped to clang by default)
+    - os: osx
+      env: CHANNEL=stable
+      compiler: clang
+
+  allow_failures:
+    # Ignore failures when building against the devel Nim branch
+    # Also ignore OSX, due to very long build queue
+    - env: CHANNEL=devel
+    - os: osx
+  fast_finish: true
+
+## BEGIN: Assuming you rely on external dependencies
+addons: # This will only be executed on Linux
+  apt:
+    packages:
+      - libyourdependency
+
+before_install:
+  # If you want to install an OSX Homebrew dependency
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libyourdependency; fi
+## END: Assuming you rely on external dependencies
+
+install:
+  - export CHOOSENIM_NO_ANALYTICS=1
+  - curl https://nim-lang.org/choosenim/init.sh -sSf > init.sh
+  - sh init.sh -y
+  - export PATH=~/.nimble/bin:$PATH
+  - echo "export PATH=~/.nimble/bin:$PATH" >> ~/.profile
+  - choosenim $CHANNEL
+
+script:
+    - nimble refresh
+    - nimble test
+
+branches:
+  except:
+    - gh-pages
+---- 
+
+### Devel branches
+
+Building your code on Travis CI is useful to check regressions against the master and devel branches of Nim.
+Same for your code documentation.
+
+Detailed guide, which the following example originates from: +
+http://blaxpirit.com/blog/22/advanced-uses-of-travis-ci-with-nim.html[Advanced uses of Travis CI with Nim]
+
+https://github.com/oprypin/nim-random/blob/ed21c4a1289d9314901f253e6edce826a794b17e/.travis.yml[Real example]
+
+
+[source,yaml]
+----
+language: c
+compiler: gcc
+matrix:
+  include:
+    - {}
+    - compiler: clang
+    - env: nim_channel=devel
+  allow_failures:
+    - env: nim_channel=devel
+  fast_finish: true
+before_install:
+  - nim_channel="${nim_channel-stable}"
+  - |
+    if [ "$nim_channel" = stable ]; then
+      nim_branch="v$(curl https://nim-lang.org/channels/stable)"
+    else
+      nim_branch="$nim_channel"
+    fi
+install:
+  - |
+    if [ ! -x "nim-$nim_channel/bin/nim" ]; then
+      git clone -b "$nim_branch" https://github.com/nim-lang/nim "nim-$nim_channel/"
+      pushd "nim-$nim_channel"
+      git clone --depth 1 https://github.com/nim-lang/csources csources/
+      pushd csources
+      sh build.sh
+      popd
+      rm -rf csources
+      bin/nim c koch
+      ./koch boot -d:release
+    else
+      pushd "nim-$nim_channel"
+      git fetch origin "$nim_branch"
+      if ! git merge FETCH_HEAD | grep "Already up.to.date"; then
+        bin/nim c koch
+        ./koch boot -d:release
+      fi
+    fi
+    popd
+before_script:
+    - export PATH="nim-$nim_channel/bin${PATH:+:$PATH}"
+script:
+    # Replace uppercase strings!
+    - nim compile --cc:$CC --verbosity:0 --run MYFILE.nim
+    # Optional: build docs. 
+    - nim doc --docSeeSrcUrl:https://github.com/AUTHOR/MYPROJECT/blob/master --project MYFILE.nim
+cache:
+  directories:
+    - nim-master
+    - nim-stable
+branches:
+  except:
+    - gh-pages
+
+----
+
+## Appveyor
+
+Create .appveyor.yml 
+
+[source,yaml]
+----
+version: '{build}'
+
+cache:
+- nim-0.16.0_x64.zip
+- x86_64-4.9.2-release-win32-seh-rt_v4-rev4.7z
+
+matrix:
+  fast_finish: true
+
+environment:
+  matrix:
+    - MINGW_ARCHIVE: x86_64-4.9.2-release-win32-seh-rt_v4-rev4.7z
+      MINGW_DIR: mingw64
+      MINGW_URL: https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/4.9.2/threads-win32/seh/x86_64-4.9.2-release-win32-seh-rt_v4-rev4.7z/download
+      NIM_ARCHIVE: nim-0.16.0_x64.zip
+      NIM_DIR: nim-0.16.0
+      NIM_URL: https://nim-lang.org/download/nim-0.16.0_x64.zip
+      platform: x64
+
+install:
+  - MKDIR %CD%\tools_tmp
+  - IF not exist "%MINGW_ARCHIVE%" appveyor DownloadFile "%MINGW_URL%" -FileName "%MINGW_ARCHIVE%"
+  - 7z x -y "%MINGW_ARCHIVE%" -o"%CD%\tools_tmp"> nul
+  - IF not exist "%NIM_ARCHIVE%" appveyor DownloadFile "%NIM_URL%" -FileName "%NIM_ARCHIVE%"
+  - 7z x -y "%NIM_ARCHIVE%" -o"%CD%\tools_tmp"> nul
+  - SET PATH=%CD%\tools_tmp\%NIM_DIR%\bin;%CD%\tools_tmp\%MINGW_DIR%\bin;%PATH%
+
+build_script:
+  - nimble.exe install CHANGEME -y
+  - nim.exe c -p:. ./tests/CHANGEME.nim
+
+test_script:
+  - ./tests/CHANGEME
+
+deploy: off
+----
+
+You may encounter an issue with Sourceforge download and download just a webpage. In that case replace the generic URL by a direct link into a mirror like 'https://ayera.dl.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/4.9.2/threads-win32/seh/x86_64-4.9.2-release-win32-seh-rt_v4-rev4.7z'
+
+## Azure Pipelines
+
+The following script is used in https://github.com/mratsim/weave[Weave] and supports the following features:
+
+- Clean separation between build stages
+- C and C++ compilation
+- 32 and 64-bit compilation on Windows and Linux
+- Windows, Mac and Linux
+- Caching
+- Nim stable (disabled by default) and Nim devel
+- Nim compilation with multiple cores
+- 10 parallel jobs (the default for public projects)
+- Proper "nimble install mydependency" handling on both POSIX and Windows. (On Windows, nimble install can fail to find Nim binaries under Azure Pipelines bash)
+- Proper settings of environment variables between tasks. Setting environment variables between tasks for use in later tasks is very poorly documented. Furthermore path variables on Windows bash are set wrong, requiring the use of separate Powershell and Bash tasks for setting path environment variables.
+
+It sets a "WEAVE_TEST_LANG" environment variable that the `nimble test` task must checks to switch between C and C++ mode
+[source,yaml]
+----
+strategy:
+  maxParallel: 10
+  matrix:
+    # Nim requires enforcing ARCH="x86" and ucpu
+    # for 32-bit targets as it seems like Azure machines are 64-bit
+    Windows_devel_32bit:
+      VM: 'windows-latest'
+      ARCH: x86
+      ucpu: i686
+      PLATFORM: x86
+      CHANNEL: devel
+      WEAVE_TEST_LANG: c
+    Windows_devel_64bit:
+      VM: 'windows-latest'
+      PLATFORM: x64
+      CHANNEL: devel
+      WEAVE_TEST_LANG: c
+    # Windows_cpp_devel_64bit:
+    #   VM: 'windows-latest'
+    #   PLATFORM: x64
+    #   CHANNEL: devel
+    #   WEAVE_TEST_LANG: cpp
+    Linux_devel_64bit:
+      VM: 'ubuntu-16.04'
+      PLATFORM: x64
+      CHANNEL: devel
+      WEAVE_TEST_LANG: c
+    # Linux_cpp_devel_64bit:
+    #   VM: 'ubuntu-16.04'
+    #   PLATFORM: x64
+    #   CHANNEL: devel
+    #   WEAVE_TEST_LANG: cpp
+    Linux_devel_32bit:
+      VM: 'ubuntu-16.04'
+      PLATFORM: x86
+      ucpu: i686
+      CHANNEL: devel
+      WEAVE_TEST_LANG: c
+    MacOS_devel_64bit:
+      VM: 'macOS-10.14'
+      PLATFORM: x64
+      CHANNEL: devel
+      WEAVE_TEST_LANG: c
+
+pool:
+  vmImage: $(VM)
+
+steps:
+  - task: CacheBeta@1
+    displayName: 'cache Nim binaries'
+    inputs:
+      key: NimBinaries | $(Agent.OS) | $(CHANNEL) | $(PLATFORM)
+      path: NimBinaries
+
+  - task: CacheBeta@1
+    displayName: 'cache MinGW-w64'
+    inputs:
+      key: mingwCache | 8_1_0 | $(PLATFORM)
+      path: mingwCache
+    condition: eq(variables['Agent.OS'], 'Windows_NT')
+
+  - powershell: |
+      Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
+    displayName: 'long path support'
+    condition: eq(variables['Agent.OS'], 'Windows_NT')
+  - bash: |
+      echo "PATH=${PATH}"
+      set -e
+      echo "Installing MinGW-w64"
+      if [[ $PLATFORM == "x86" ]]; then
+        MINGW_FILE="i686-8.1.0-release-posix-dwarf-rt_v6-rev0.7z"
+        MINGW_URL="https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/8.1.0/threads-posix/dwarf/${MINGW_FILE}"
+        MINGW_DIR="mingw32"
+      else
+        MINGW_FILE="x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z"
+        MINGW_URL="https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/${MINGW_FILE}"
+        MINGW_DIR="mingw64"
+      fi
+      mkdir -p mingwCache
+      pushd mingwCache
+      if [[ ! -e "$MINGW_FILE" ]]; then
+        rm -f *.7z
+        curl -OLsS "$MINGW_URL"
+      fi
+      7z x -y -bd "$MINGW_FILE" >/dev/null
+      mkdir -p /c/custom
+      mv "$MINGW_DIR" /c/custom/
+      popd
+      echo "##vso[task.prependpath]/c/custom/${MINGW_DIR}/bin"
+    displayName: 'Install dependencies (Windows)'
+    condition: eq(variables['Agent.OS'], 'Windows_NT')
+
+  - bash: |
+      echo "PATH=${PATH}"
+      export ncpu=
+      case '$(Agent.OS)' in
+      'Linux')
+        ncpu=$(nproc)
+        ;;
+      'Darwin')
+        ncpu=$(sysctl -n hw.ncpu)
+        ;;
+      'Windows_NT')
+        ncpu=$NUMBER_OF_PROCESSORS
+        ;;
+      esac
+      [[ -z "$ncpu" || $ncpu -le 0 ]] && ncpu=1
+      echo "Found ${ncpu} cores"
+      echo "##vso[task.setvariable variable=ncpu;]$ncpu"
+    displayName: 'Detecting number of cores'
+
+  - bash: |
+      echo "PATH=${PATH}"
+      if [ "${CHANNEL}" = stable ]; then
+        BRANCH="v$(curl https://nim-lang.org/channels/stable)"
+      else
+        BRANCH="${CHANNEL}"
+      fi
+      mkdir -p NimBinaries
+      pushd NimBinaries
+      if [ ! -x "nim-${CHANNEL}/bin/nim" ]; then
+        git clone -b "${BRANCH}" https://github.com/nim-lang/nim "nim-${CHANNEL}/"
+        pushd "nim-${CHANNEL}"
+        git clone --depth 1 https://github.com/nim-lang/csources csources/
+        pushd csources
+
+        make -j $ncpu CC=gcc
+        popd
+        rm -rf csources
+        bin/nim c koch
+        ./koch boot -d:release
+        ./koch tools
+      else
+        pushd "nim-${CHANNEL}"
+        git fetch origin "${BRANCH}"
+        if [[ $(git merge FETCH_HEAD | grep -c "Already up to date.") -ne 1 ]]; then
+          bin/nim c koch
+          ./koch boot -d:release
+          ./koch tools
+        fi
+      fi
+      popd # exit nim-CHANNEL
+      popd # exit NimBinaries
+    displayName: 'Building Nim'
+
+  # Nimble uses findExe which is broken under bash windows
+  # We need to set PATH in the collector for the next task
+  # and also update it within this task with export if it is needed for this task
+  - bash: |
+      echo "##vso[task.prependpath]$PWD/NimBinaries/nim-${CHANNEL}/bin"
+    displayName: 'Set env variable (Posix)'
+    condition: ne(variables['Agent.OS'], 'Windows_NT')
+  - bash: |
+      echo "PATH=${PATH}"
+      nimble refresh
+      nimble install cligen synthesis
+    displayName: 'Building the package dependencies (Posix)'
+    condition: ne(variables['Agent.OS'], 'Windows_NT')
+
+  - powershell: |
+      echo "##vso[task.prependpath]$pwd\NimBinaries\nim-$(CHANNEL)\bin"
+    displayName: 'Set env variable (Windows)'
+    condition: eq(variables['Agent.OS'], 'Windows_NT')
+  - powershell: |
+      echo $Env:Path
+      nimble refresh
+      nimble install cligen synthesis
+    displayName: 'Building the package dependencies (Windows)'
+    condition: eq(variables['Agent.OS'], 'Windows_NT')
+
+  - bash: |
+      echo "PATH=${PATH}"
+      nimble test
+    displayName: 'Testing the package'
+----
+
+## Cross compilation and Release
+
+Nim can generate lightweight executables.
+You may want to cross-compile the executable.
+Here is examples of releasing a cross-compiled executable.
+
+### GitHub Actions
+
+Compress the `RELEASE_FILES` files and release those to GitHub Releases.
+
+[source,yaml]
+----
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  APP_NAME: 'APPNAME'
+  NIM_VERSION: 'stable'
+  MAINTAINER: 'MAINTAINER'
+  RELEASE_FILES: APPNAME LICENSE README.*
+
+jobs:
+  build-artifact:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macOS-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: jiro4989/setup-nim-action@v1
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+      - run: nimble build -Y -d:release
+      - name: Create artifact
+        run: |
+          assets="${{ env.APP_NAME }}_$(echo "${{ runner.os }}" | tr '[:upper:]' '[:lower:]')"
+          echo "$assets"
+          mkdir -p "dist/$assets"
+          cp -r ${{ env.RELEASE_FILES }} "dist/$assets/"
+          (
+            cd dist
+            if [[ "${{ runner.os }}" == Windows ]]; then
+              7z a "$assets.zip" "$assets"
+            else
+              tar czf "$assets.tar.gz" "$assets"
+            fi
+            ls -lah *.*
+          )
+        shell: bash
+      - uses: actions/upload-artifact@v2
+        with:
+          name: artifact-${{ matrix.os }}
+          path: |
+            dist/*.tar.gz
+            dist/*.zip
+  
+  create-release:
+    runs-on: ubuntu-latest
+    needs:
+      - build-artifact
+    steps:
+      - uses: actions/checkout@v1
+      - name: Create Release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: Release
+          draft: false
+          prerelease: false
+      
+      - name: Write upload_url to file
+        run: echo '${{ steps.create-release.outputs.upload_url }}' > upload_url.txt
+      
+      - uses: actions/upload-artifact@v2
+        with:
+          name: create-release
+          path: upload_url.txt
+  
+  upload-release:
+    runs-on: ubuntu-latest
+    needs: create-release
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            asset_name_suffix: linux.tar.gz
+            asset_content_type: application/gzip
+          - os: windows-latest
+            asset_name_suffix: windows.zip
+            asset_content_type: application/zip
+          - os: macOS-latest
+            asset_name_suffix: macos.tar.gz
+            asset_content_type: application/gzip
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifact-${{ matrix.os }}
+      
+      - uses: actions/download-artifact@v2
+        with:
+          name: create-release
+      
+      - id: vars
+        run: |
+          echo "::set-output name=upload_url::$(cat upload_url.txt)"
+      
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.vars.outputs.upload_url }}
+          asset_path: ${{ env.APP_NAME }}_${{ matrix.asset_name_suffix }}
+          asset_name: ${{ env.APP_NAME }}_${{ matrix.asset_name_suffix }}
+          asset_content_type: ${{ matrix.asset_content_type }}
+----
+
+CI runs when you create a new tag. Releases will be uploaded to GitHub Relases when the CI passed.
+
+[source,bash]
+----
+$ git tag v0.1.0
+$ git push origin v0.1.0
+----
+

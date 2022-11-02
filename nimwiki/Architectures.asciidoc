@@ -1,0 +1,44 @@
+=== OSes / CPU Architectures
+
+Thanks to the C backend, Nim can run on a large set of architectures.
+
+See https://github.com/nim-lang/Nim/blob/devel/lib/system/platforms.nim
+
+Please help testing Nim on less common architectures and add them below:
+
+=== Linux
+
+==== x86
+
+==== x86_64
+
+==== ppc64
+
+==== ppc64el
+
+==== armv6l
+
+==== arm64
+
+==== armel
+
+==== s390
+
+==== alpha
+
+==== hppa
+
+=== BSD
+
+=== OSX
+
+=== Windows
+
+==== x86
+
+==== x86_64
+
+==== ppc64
+
+==== armv6l
+

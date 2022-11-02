@@ -1,0 +1,214 @@
+How to create a simple HTTP service for a SOA environment and run it under systemd.
+
+Replace myservicename and myservicedir. 
+
+Install the build requirements:
+[source,bash]
+----
+nimble install jester
+----
+
+=== Basic HTTP service
+
+Create myservice.nim : 
+[source,nim]
+----
+import jester, posix, json
+const config_file_name = "conf.json"
+
+# the "debug" and "info" macros from the logging module are not flushing the buffer
+
+proc log_debug(args: varargs[string, `$`]) =
+  debug args
+  fl.file.flushFile()
+
+proc log_info(args: varargs[string, `$`]) =
+  info args
+  fl.file.flushFile()
+
+onSignal(SIGABRT):
+  ## Handle SIGABRT from systemd
+  # Lines printed to stdout will be received by systemd and logged
+  # Start with "<severity>" from 0 to 7
+  echo "<2>Received SIGABRT"
+  quit(1)
+
+# Add handlers for SIGSTOP, SIGQUIT as needed
+
+let conf = parseFile(config_file_name)
+# Traditional logging to file. To use the more featureful journald you might
+# use https://github.com/FedericoCeratto/nim-morelogging
+let fl = newFileLogger(conf["log_fname"].str, fmtStr = "$datetime $levelname ")
+fl.addHandler
+
+include "templates/base.tmpl"
+include "templates/home.tmpl"
+
+routes:
+  get "/":
+    resp base_page(generate_home_page())
+
+when isMainModule:
+  log_info "starting"
+  runForever()
+
+----
+
+=== Example templates
+
+Simple HTML templates. Create /var/lib/myservicename/templates/base.tmpl
+[source,nim]
+----
+#? stdtmpl | standard
+#proc base_page(content: string): string =
+#  result = ""
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>myservicename</title>
+    <link rel="shortcut icon" href=""/>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+    </style>
+  </head>
+  <body>
+    <div class="container">
+    ${content}
+    </div>
+  </body>
+</html>
+----
+
+Create /var/lib/myservicename/temaplates/home.tmpl
+[source,nim]
+----
+#? stdtmpl | standard
+#proc generate_home_page(): string =
+#  result = ""
+<h5>Welcome to myservicename</h5>
+----
+
+
+=== Configure the running environment
+
+Create /lib/systemd/system/myservicename.service file. Configure CapabilityBoundingSet as needed.
+
+[source,ini]
+----
+[Unit]
+Description=myservicename
+# Optional documentation hints
+Documentation=man:myservicename
+Documentation=https://github.com/REPLACEME/myservicename
+After=network.target httpd.service squid.service nfs-server.service mysqld.service named.service postfix.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/lib/myservicedir/
+# stdbuf buffers the stdout in order not to block your application
+ExecStart=/usr/bin/stdbuf -oL /var/lib/myservicedir/myservicename
+# wait 10s when stopping
+TimeoutStopSec=10
+# SIGTERM the master process and later on SIGKILL any stray process
+KillMode=mixed
+KillSignal=SIGTERM
+
+User=myservicename
+#Group=myservicename
+# Restart the daemon if crashes or is killed
+Restart=always
+RestartSec=2s
+LimitNOFILE=65536
+
+# Hardening
+NoNewPrivileges=yes
+# Set process capabilities. Fine-tune as needed.
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH
+# Create private /dev /tmp /home to isolate the process
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=full
+# Log any stdout/stderr to syslog/journald
+StandardOutput=syslog+console
+StandardError=syslog+console
+# Allow RW access to some dirs. Add yours as needed.
+ReadWriteDirectories=/proc/self
+ReadWriteDirectories=-/var/run
+
+[Install]
+WantedBy=multi-user.target
+----
+
+An example variable config file for your application.
+Create /var/lib/myservicedir/conf.json
+[source,json]
+----
+{
+  "log_fname": "/var/log/myservicename.log",
+}
+----
+
+[source,bash]
+----
+sudo adduser myservicename --system --home /var/lib/myservicedir
+sudo touch /var/log/myservicename.log
+sudo chown myservicename:myservicename /var/log/myservicename.log
+sudo systemctl enable myservicename
+sudo systemctl start myservicename
+----
+
+
+=== Systemd watchdog
+
+The watchdog automatically restarts the application if a "ping" is not received within 10 seconds. Useful to detect a frozen process. 
+To enable a watchdog, add "WatchdogSec=10s" to the service file.
+
+Install https://github.com/FedericoCeratto/nim-sdnotify[sdnotify client]
+
+[source,nim]
+----
+import sdnotify
+let sd = newSDNotify()
+sd.notify_ready()
+# Every 5 seconds in a dedicated thread:
+sd.ping_watchdog()
+----
+
+=== Application metrics
+
+To generate application metrics for StatsD use https://github.com/FedericoCeratto/nim-statsd-client[StatsD client]
+
+=== Running Jester behind Nginx
+
+Nginx is commonly used as a reverse proxy for webservices.
+
+Edit /etc/nginx/sites-enabled/default and add:
+[source,php]
+----
+server {
+  listen 443;
+  server_name www.REPLACEME.org;
+  # Comment out the next 3 lines to disable SSL
+  ssl on;
+  ssl_certificate /etc/REPLACEME/fullchain.pem;
+  ssl_certificate_key /etc/REPLACEME/privkey.pem;
+
+  access_log  /var/log/REPLACEME.log;
+  location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $host;
+        # Jester listens on port 5000 by default
+        proxy_pass http://127.0.0.1:5000;
+  }
+}
+----
+Reload Nginx and monitor the logfile:
+[source,bash]
+----
+sudo service nginx reload
+----

@@ -1,0 +1,33 @@
+#### Building and publishing docs on GitHub Pages
+
+A script build your project documentation and publish it on GitHub pages. Replace "main_fname".
+
+Caution: the script will commit and publish every html file in the project directory.
+
+[source,nim]
+----
+#!/usr/bin/env nim 
+mode = ScriptMode.Verbose 
+import strutils 
+let main_fname = "REPLACE_ME.nim" 
+ 
+var author_name, proj_name = "" 
+let git_orig = static_exec "git remote show origin -n" 
+for line in git_orig.splitlines: 
+  if line.contains "Push  URL:": 
+    assert line.contains "github.com" 
+    (author_name, proj_name) = line.split(':')[2].split('/') 
+    proj_name = proj_name[0..<proj_name.len-4] 
+ 
+echo "Author name: $#\nProject name: $#\n" % [author_name, proj_name] 
+exec "nim doc2  --docSeeSrcUrl:https://github.com/$#/$#/blob/master $#" % [ 
+  author_name, proj_name, main_fname] 
+exec "git checkout gh-pages || git checkout --orphan gh-pages" 
+exec "git add *.html" 
+exec "git commit *.html -m'update docs'" 
+exec "git push --set-upstream origin gh-pages" 
+echo "\nThe following files have been published:" 
+for fname in listFiles("."): 
+  if fname.endswith(".html"): 
+    echo "https://$#.github.io/$#/$#" % [author_name, proj_name, fname[2..<fname.len]] 
+----
