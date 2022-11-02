@@ -10,7 +10,7 @@ for file in toSeq(walkFiles(workingDir / "*.md")):
   var newName = file.changeFileExt("nim")
   newName = newName.replace('-','_')
   var f: File = nil
-  if open(f, splitPath(newName).tail, fmWrite):
+  if open(f, workingDir / splitPath(newName).tail, fmWrite):
     try:
       echo "writing ", newName
       f.write(nimibStart)
