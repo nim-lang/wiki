@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <title>nimwiki/Best_practices.nim</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>🐳</text></svg>">
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <link rel='stylesheet' href='https://unpkg.com/normalize.css'>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/light.min.css">
+  <link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/pietroppeter/nimib/assets/atom-one-light.css'>
+  <style>
+.nb-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nb-small {
+  font-size: 0.8rem;
+}
+button.nb-small {
+  float: right;
+  padding: 2px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+section#source {
+  display:none
+}
+
+.nb-output {
+  line-height: 1.15;
+}
+</style>
+  
+</head>
+<body>
+<header>
+<div class="nb-box">
+  <span><a href="..">🏡</a></span>
+  <span><code>nimwiki/Best_practices.nim</code></span>
+  <span><a href="https://github.com/dlesnoff/nim-wiki"><svg aria-hidden="true" width="1.2em" height="1.2em" style="vertical-align: middle;" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59c.4.07.55-.17.55-.38c0-.19-.01-.82-.01-1.49c-2.01.37-2.53-.49-2.69-.94c-.09-.23-.48-.94-.82-1.13c-.28-.15-.68-.52-.01-.53c.63-.01 1.08.58 1.23.82c.72 1.21 1.87.87 2.33.66c.07-.52.28-.87.51-1.07c-1.78-.2-3.64-.89-3.64-3.95c0-.87.31-1.59.82-2.15c-.08-.2-.36-1.02.08-2.12c0 0 .67-.21 2.2.82c.64-.18 1.32-.27 2-.27c.68 0 1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82c.44 1.1.16 1.92.08 2.12c.51.56.82 1.27.82 2.15c0 3.07-1.87 3.75-3.65 3.95c.29.25.54.73.54 1.48c0 1.07-.01 1.93-.01 2.2c0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill="#000"></path></svg></a></span>
+</div>
+<hr>
+</header><main>
+<h1>Best Practices</h1>
+<p>This list is a community-maintained guide for some &quot;best practice&quot; suggestions. Written in the TLDR style, suggestions are in no particular order, should be beneficial to users with any level of Nim proficiency.</p>
+<ul>
+<li>Use 2-spaces indentation.</li>
+<li><a href="https://nim-lang.github.io/Nim/manual.html#procedures-func">Use <code>func</code> where possible.</a></li>
+<li><a href="https://github.com/nim-lang/RFCs/issues/281#issue-737225894">Use <code>auto</code> instead of <code>any</code>.</a></li>
+<li><a href="https://github.com/nim-lang/Nim/pull/16927#issue-567131544">Use <code>self</code> instead of <code>this</code> for specifying the main object argument in routines.</a></li>
+<li>Use <code>const</code> and <code>let</code> where possible.</li>
+<li>Put your types near the top of the file.</li>
+<li>Use <code>import</code> for <strong>public</strong> code instead of <code>include</code>.</li>
+<li>Use <code>include</code> for <strong>unittesting private code</strong> instead of <code>import</code>.</li>
+<li><a href="https://nim-lang.github.io/Nim/system.html#runnableExamples%2Cstring%2Cuntyped">Use <code>runnableExamples</code> for code examples in the documentation.</a></li>
+<li>Use <code>tuple</code> to return multiple values of different types.</li>
+<li>Standard library imports should be prefixed with <code>std/</code>, like <code>std/os</code>, <code>std/[strutils, sequtils]</code>, etc.</li>
+<li>Use <code>when isMainModule:</code> to specify code that'll only run if the source file is the main one.</li>
+<li>Design your code to work in-place, then <a href="https://nim-lang.github.io/Nim/sugar.html#dup.m%2CT%2Cvarargs%5Buntyped%5D">use <code>sugar.dup</code> if you need to call it out-of-place.</a></li>
+<li>Prefer in-place functions, for example, <code>sort</code> instead of <code>sorted</code> where appropriate.</li>
+<li><a href="https://nim-lang.github.io/Nim/options.html#basic-usage">Use <code>options</code> for optional types and optional returns.</a></li>
+<li>Use <code>Natural</code> or <code>Positive</code> as an argument or input type for non-negative integers.</li>
+<li>Use <code>char</code> to operate on single characters, for example <code>&quot;foo&quot; &amp; '\n'</code> instead of <code>&quot;foo&quot; &amp; &quot;\n&quot;</code>.</li>
+<li>Annotating routines with <code>{.deprecated.}</code> will make the compiler print out all places where that routine is called.</li>
+<li>Procedures like <code>echo</code>, <code>repr</code>, <code>astToStr</code>, <code>assert</code>, <code>expandMacros</code> and the compiler switch <code>--expandArc</code> can be useful for debugging.</li>
+<li>In macros prefer to operate on the AST instead of using <code>parseStmt</code> and string operations.</li>
+<li>For designing new macros write the desired result manually and then use <code>dumpAstGen</code> to get macro code that will generate the same code.</li>
+<li>Use <code>string</code> to represent strings of any kind (Nim strings are not encoded in any way) - <strong>NOT</strong> for binary blobs.</li>
+<li>Use <code>seq[byte]</code> to represent raw binary blobs.</li>
+<li>Prefer to use <code>func</code> and/or <code>proc</code> even for OOP, use interface-like libraries (for example <a href="https://github.com/yglukhov/iface">iface</a> instead of <code>method</code> unless there's no way around it.</li>
+<li>Use <code>nimble init</code> or a &quot;repo template&quot; like <a href="https://github.com/treeform/nimtemplate">nimtemplate</a> to start a new project.</li>
+<li>Try to use <code>FIXME</code>, <code>NOTE</code>, <code>OPTIMIZE</code>, <code>TODO</code> in relevant code comments so that <a href="https://marketplace.visualstudio.com/items?itemName=ExodiusStudios.comment-anchors">editors</a> and <a href="https://github.com/marketplace/actions/todo-to-issue">GitHub Actions can read them.</a></li>
+<li>For documentation it is generally preferred to use descriptive third person present tense with proper punctuation.</li>
+<li>For documentation the first paragraph of a doc comment must be a summary, it should concisely define the purpose and functionality of the module/library.</li>
+<li><strong>Do NOT</strong> use <code>distinct tuple</code>.</li>
+<li><strong>Do NOT</strong> use <code>float</code> for things that need to be precise (like money), instead consider using decimal.</li>
+<li><strong>Do NOT</strong> use <code>discard</code> on a <code>Future</code>.</li>
+<li><strong>Do NOT</strong> add label names to the <code>block</code> statement if you don't use them.</li>
+<li><strong>Do NOT</strong> write error messages in ALL_CAPS.</li>
+<li><strong>Do NOT</strong> use exclamation marks in error messages.</li>
+<li><strong>Do NOT</strong> name your variables in ALL_CAPS unless it's required for FFI purposes.</li>
+<li><strong>Do NOT</strong> use <code>Natural</code> or <code>Positive</code> as a return type for integers, use <code>int</code> or <code>uint</code> instead.</li>
+<li><strong>Do NOT</strong> use <code>try</code> blocks with a lot of <code>except</code> branches, use explicit control flow instead.</li>
+<li><strong>Do NOT</strong> repeat <code>&amp;</code> too much for string concatenation, use <code>add</code> instead.</li>
+<li><strong>Do NOT</strong> repeat <code>&amp;</code> too much to string formatting, use <code>std/strformat</code> instead.</li>
+<li><strong>Do NOT</strong> call <code>randomize()</code> in your libraries that use <code>std/random</code>, users should call it themselves.</li>
+</ul>
+<p>See also:</p>
+<ul>
+<li>https://nim-lang.github.io/Nim/nep1.html</li>
+<li>https://status-im.github.io/nim-style-guide</li>
+<li>https://community.kde.org/Policies/Commit_Policy#Guidelines</li>
+<li><a href="https://github.com/kettanaito/naming-cheatsheet#naming-cheatsheet">Naming things cheatsheet, language agnostic</a></li>
+</ul>
+</main>
+<footer>
+<hr>
+<div class="nb-box">
+  <span><span class="nb-small">made with <a href="https://pietroppeter.github.io/nimib/">nimib 🐳</a></span></span>
+  <span></span>
+  <span><button class="nb-small" id="show" onclick="toggleSourceDisplay()">Show Source</button></span>
+</div>
+</footer>
+<section id="source">
+<pre><code class="nim hljs"><span class="hljs-keyword">import</span> strformat, strutils
+<span class="hljs-keyword">import</span> nimib
+<span class="hljs-keyword">import</span> nimoji
+
+nbInit
+
+nbText:<span class="hljs-string">&quot;&quot;&quot;
+# Best Practices
+
+This list is a community-maintained guide for some &quot;best practice&quot; suggestions. Written in the TLDR style, suggestions are in no particular order, should be beneficial to users with any level of Nim proficiency.
+
+- Use 2-spaces indentation.
+- [Use `func` where possible.](https://nim-lang.github.io/Nim/manual.html#procedures-func)
+- [Use `auto` instead of `any`.](https://github.com/nim-lang/RFCs/issues/281#issue-737225894)
+- [Use `self` instead of `this` for specifying the main object argument in routines.](https://github.com/nim-lang/Nim/pull/16927#issue-567131544)
+- Use `const` and `let` where possible.
+- Put your types near the top of the file.
+- Use `import` for **public** code instead of `include`.
+- Use `include` for **unittesting private code** instead of `import`.
+- [Use `runnableExamples` for code examples in the documentation.](https://nim-lang.github.io/Nim/system.html#runnableExamples%2Cstring%2Cuntyped)
+- Use `tuple` to return multiple values of different types.
+- Standard library imports should be prefixed with `std/`, like `std/os`, `std/[strutils, sequtils]`, etc.
+- Use `when isMainModule:` to specify code that'll only run if the source file is the main one.
+- Design your code to work in-place, then [use `sugar.dup` if you need to call it out-of-place.](https://nim-lang.github.io/Nim/sugar.html#dup.m%2CT%2Cvarargs%5Buntyped%5D)
+- Prefer in-place functions, for example, `sort` instead of `sorted` where appropriate.
+- [Use `options` for optional types and optional returns.](https://nim-lang.github.io/Nim/options.html#basic-usage)
+- Use `Natural` or `Positive` as an argument or input type for non-negative integers.
+- Use `char` to operate on single characters, for example `&quot;foo&quot; &amp; '\n'` instead of `&quot;foo&quot; &amp; &quot;\n&quot;`.
+- Annotating routines with `{.deprecated.}` will make the compiler print out all places where that routine is called.
+- Procedures like `echo`, `repr`, `astToStr`, `assert`, `expandMacros` and the compiler switch `--expandArc` can be useful for debugging.
+- In macros prefer to operate on the AST instead of using `parseStmt` and string operations.
+- For designing new macros write the desired result manually and then use `dumpAstGen` to get macro code that will generate the same code. 
+- Use `string` to represent strings of any kind (Nim strings are not encoded in any way) - **NOT** for binary blobs.
+- Use `seq[byte]` to represent raw binary blobs.
+- Prefer to use `func` and/or `proc` even for OOP, use interface-like libraries (for example [iface](https://github.com/yglukhov/iface) instead of `method` unless there's no way around it.
+- Use `nimble init` or a &quot;repo template&quot; like [nimtemplate](https://github.com/treeform/nimtemplate) to start a new project.
+- Try to use `FIXME`, `NOTE`, `OPTIMIZE`, `TODO` in relevant code comments so that [editors](https://marketplace.visualstudio.com/items?itemName=ExodiusStudios.comment-anchors) and [GitHub Actions can read them.](https://github.com/marketplace/actions/todo-to-issue)
+- For documentation it is generally preferred to use descriptive third person present tense with proper punctuation.
+- For documentation the first paragraph of a doc comment must be a summary, it should concisely define the purpose and functionality of the module/library.
+- **Do NOT** use `distinct tuple`.
+- **Do NOT** use `float` for things that need to be precise (like money), instead consider using decimal.
+- **Do NOT** use `discard` on a `Future`.
+- **Do NOT** add label names to the `block` statement if you don't use them.
+- **Do NOT** write error messages in ALL_CAPS.
+- **Do NOT** use exclamation marks in error messages.
+- **Do NOT** name your variables in ALL_CAPS unless it's required for FFI purposes.
+- **Do NOT** use `Natural` or `Positive` as a return type for integers, use `int` or `uint` instead.
+- **Do NOT** use `try` blocks with a lot of `except` branches, use explicit control flow instead.
+- **Do NOT** repeat `&amp;` too much for string concatenation, use `add` instead.
+- **Do NOT** repeat `&amp;` too much to string formatting, use `std/strformat` instead.
+- **Do NOT** call `randomize()` in your libraries that use `std/random`, users should call it themselves.
+
+See also:
+- https://nim-lang.github.io/Nim/nep1.html
+- https://status-im.github.io/nim-style-guide
+- https://community.kde.org/Policies/Commit_Policy#Guidelines
+- [Naming things cheatsheet, language agnostic](https://github.com/kettanaito/naming-cheatsheet#naming-cheatsheet)
+&quot;&quot;&quot;</span>
+nbSave()
+</code></pre>
+</section><script>
+function toggleSourceDisplay() {
+  var btn = document.getElementById("show")
+  var source = document.getElementById("source");
+  if (btn.innerHTML=="Show Source") {
+    btn.innerHTML = "Hide Source";
+    source.style.display = "block";
+  } else {
+    btn.innerHTML = "Show Source";
+    source.style.display = "none";
+  }
+}
+</script></body>
+</html>

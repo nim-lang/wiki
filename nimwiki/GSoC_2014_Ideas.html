@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <title>nimwiki/GSoC_2014_Ideas.nim</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>🐳</text></svg>">
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <link rel='stylesheet' href='https://unpkg.com/normalize.css'>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/light.min.css">
+  <link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/pietroppeter/nimib/assets/atom-one-light.css'>
+  <style>
+.nb-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nb-small {
+  font-size: 0.8rem;
+}
+button.nb-small {
+  float: right;
+  padding: 2px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+section#source {
+  display:none
+}
+
+.nb-output {
+  line-height: 1.15;
+}
+</style>
+  
+</head>
+<body>
+<header>
+<div class="nb-box">
+  <span><a href="..">🏡</a></span>
+  <span><code>nimwiki/GSoC_2014_Ideas.nim</code></span>
+  <span><a href="https://github.com/dlesnoff/nim-wiki"><svg aria-hidden="true" width="1.2em" height="1.2em" style="vertical-align: middle;" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59c.4.07.55-.17.55-.38c0-.19-.01-.82-.01-1.49c-2.01.37-2.53-.49-2.69-.94c-.09-.23-.48-.94-.82-1.13c-.28-.15-.68-.52-.01-.53c.63-.01 1.08.58 1.23.82c.72 1.21 1.87.87 2.33.66c.07-.52.28-.87.51-1.07c-1.78-.2-3.64-.89-3.64-3.95c0-.87.31-1.59.82-2.15c-.08-.2-.36-1.02.08-2.12c0 0 .67-.21 2.2.82c.64-.18 1.32-.27 2-.27c.68 0 1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82c.44 1.1.16 1.92.08 2.12c.51.56.82 1.27.82 2.15c0 3.07-1.87 3.75-3.65 3.95c.29.25.54.73.54 1.48c0 1.07-.01 1.93-.01 2.2c0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill="#000"></path></svg></a></span>
+</div>
+<hr>
+</header><main>
+<h1>Introduction</h1>
+<p>Below is a list of project ideas for <a href="https://www.google-melange.com/gsoc/homepage/google/gsoc2014">GSoC</a> 2014. These projects require familiarity with the Nimrod programming language so it is absolutely essential that you become familiar with Nimrod ahead of time.</p>
+<p><a href="http://nimrod-lang.org">Nimrod</a> is a statically typed programming language which compiles primarily to C. Areas of the project you may wish to work on include the <a href="#wiki-nimrod-compiler">Nimrod compiler</a> which is itself written in Nimrod, Nimrod's <a href="#wiki-standard-library">standard library</a> and/or the <a href="#wiki-tools--infrastructure">tools and infrastructure</a> of Nimrod which includes the Nimrod build farm (Nimbuild) and the Nimrod package manager (babel).</p>
+<p>To get started you will need to clone the Nimrod repository and then subsequently bootstrap the compiler, instructions for doing this are located <a href="https://github.com/Araq/Nimrod#compiling">here</a>. You can then move onto the <a href="http://nimrod-lang.org/tut1.html">tutorial</a> and read through the <a href="http://nimrod-lang.org/documentation.html">other documentation</a> as well.</p>
+<p>We encourage you to join the #nimrod IRC channel on Freenode to discuss these projects with the community and our mentors. The Nimrod <a href="http://forum.nimrod-lang.org">Forum</a> is also available. Because communication is a big part of open source development you are expected to get in touch with us before making your application, failure to do so will put your application at a great disadvantage.</p>
+<p>The following list of projects are just some ideas that the community and the developers have come up with. You will be contributing to a programming language so there is a lot of flexibility when it comes to the projects that you can work on, this list is certainly not comprehensive so we are happy to hear any suggestions that you may have.</p>
+<h1>Projects</h1>
+<h2>Nimrod Compiler</h2>
+<h4>Add support for full coroutines</h4>
+<p><strong>Desirable skills:</strong> Knowledge of coroutines, C and Assembly language.</p>
+<p><strong>Description:</strong></p>
+<p>Implement proper coroutines that provide light-weight collaborative multi-tasking. The coroutines must be cooperative - this means a coroutine is suspended only when it explicitly yields. The coroutines must never be migrated across threads - this means that of all the coroutines started from a thread, exactly one is running at any point in time while the others are suspended. Other semantic details are to be nailed down as part of the project, see http://www.inf.puc-rio.br/~roberto/docs/corosblp.pdf for a good overview of coroutines.</p>
+<p>Nimrod already supports &quot;closure iterators&quot; which are comparable to Python's generators. However closure iterators are much less powerful than proper coroutines because they don't allow capturing the full call stack. This means, for instance, that closure iterators cannot be recursive.</p>
+<p>Here is a sketch of a possible implementation, but there are lots of other possibilities to implement full coroutines for Nimrod:</p>
+<ul>
+<li>Implement the necessary stack switching via inline assembler.</li>
+<li>The GC needs to support conservative marking of multiple stacks.</li>
+<li>In particular the write barrier in the GC which does the 'isOnStack' check needs to be changed.</li>
+<li>Using a bloom filter for quick testing whether an address belongs to some stack is likely to pay off.</li>
+<li>Creating a coroutine needs to register a new stack to the GC.</li>
+<li>Deleting a coroutine needs to unregister the stack to the GC.</li>
+<li>Builtin 'yld' must save the current stack pointer so that the GC knows which part of the stack is really in use.</li>
+</ul>
+<p><strong>Expected Result:</strong> A working coroutine implementation in Nimrod that plays well with the GC.</p>
+<p><strong>Difficulty:</strong> Hard</p>
+<p><strong>Mentor:</strong> Araq (<a href="http://github.com/Araq">@Araq</a>)</p>
+<hr />
+<h4>Add a code generator for OpenCL</h4>
+<p><strong>Desirable skills:</strong> Good OpenCL knowledge, knowledge of the compiler internals, basics of type theory.</p>
+<p><strong>Description:</strong></p>
+<p>Nimrod currently supports C, C++, Objective C and JavaScript code generation. However to run efficiently on GPUs an OpenCL backend is required. The easy way to do this is to copy OpenCL's low level mode of operation with its different <code>private</code>, <code>local</code>, <code>global</code> storage and simply provide a nimrodic syntax for OpenCL. So apart from syntactic sugar users get all of Nimrod's meta programming advantages plus good integration into Nimrod's infrastructure.</p>
+<p>The vision is a <code>gpu</code> pragma that means a proc and all of its dependencies are translated into OpenCL instead of C but can be invoked from ordinary Nimrod code that is translated to C. The <code>gpu</code> code generator is allowed to only translate a subset of Nimrod, in particular things like function pointers that are not supported by OpenCL do not have to be supported. The compiler should produce a clean error message for unsupported features.</p>
+<p><strong>Expected Result:</strong> The GPU code generator works on a selected set of examples/test cases.</p>
+<p><strong>Tasks:</strong></p>
+<ul>
+<li>Add support for new pointer types in the compiler like <code>global</code>, <code>private</code>.</li>
+<li>Add support for work groupss.</li>
+<li>Add support for the <code>gpu</code> pragma that translates to the OpenCL, version 2: https://www.khronos.org/registry/cl/sdk/2.0/docs/man/xhtml/</li>
+</ul>
+<p><strong>Bonus points:</strong> Support version 1.2 of the OpenCL specification: https://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/. This should be significantly harder as version 1.2 doesn't support a shared address space with the host environment.</p>
+<p><strong>Difficulty:</strong> Hard</p>
+<p><strong>Mentor:</strong> Araq (<a href="http://github.com/Araq">@Araq</a>)</p>
+<hr />
+<h4>Make Nimrod a viable research platform for Garbage Collection algorithms</h4>
+<p><strong>Desirable skills:</strong> Familiarity with the various GC approaches and algorithms, knowledge of the compiler codegen modules.</p>
+<p><strong>Description:</strong></p>
+<p>Most of the popular garbage collected languages of today require a separately distributed run-time environment, providing only a predetermined set of garbage collection algorithms. This leaves little room for experimentation with various approaches and condemns GC researchers to develop and test their algorithms on specialized platforms such as the <a href="http://jikesrvm.org/">Jikes RVM</a> that have limited practical significance.</p>
+<p>In contrast, in Nimrod, the garbage collection algorithm is chosen at compile-time and embedded in the resulting stand-alone native executable. This enables the users to pick a GC algorithm that's most suitable to their project and allows for a proliferation of GC algorithms, developed by independent groups and individuals, without requiring any modifications to be made to the standard Nimrod distribution.</p>
+<p>The Nimrod code generator and type system can provide various GC roots marking strategies, various kinds of write/read barriers and all necessary static type information (e.g. static cycle analysis) and a GC implementation will consist only of a single Nimrod module (supplied as a command-line parameter) that
+provides configuration for the code generator and implements the logic of the garbage collection algorithm. This module will be compiled as C code with the rest of the program and it could be easily debugged using standard C/C++ debugging and profiling tools.</p>
+<p><strong>Tasks:</strong></p>
+<ul>
+<li>Add support for precise stack marking</li>
+<li>Add support for read barriers and polish the support for Levanoni/Petrank style of write barriers</li>
+<li>Implement the infrastructure for picking a user-supplied GC module</li>
+</ul>
+<p><strong>Bonus points:</strong> Implement simple forms of variety of GC algorithms as a proof-of-concept</p>
+<p><strong>Difficulty:</strong> Medium to Hard</p>
+<p><strong>Mentor:</strong> zahary (<a href="http://github.com/zah">@zah</a>)</p>
+<hr />
+<h4>Fix/Expand Nimrod's &quot;Compiler as a Service&quot; and idetools features</h4>
+<p><strong>Desirable skills:</strong> Command line argument parsing, good knowledge of compiler internals and theory.</p>
+<p><strong>Description:</strong></p>
+<p>Nimrod's Compiler as a Service feature allows IDEs to query the compiler for things like code suggestions, definition lookups and more. The current implementation works but has some issues.</p>
+<p><strong>Tasks:</strong></p>
+<ul>
+<li>Review and resolve related issues.</li>
+<li>Provide commands to execute macros. Allow IDEs to quickly get the code macros generate with different inputs.</li>
+<li>Provide a mechanism to track a dirty file without saving it to disk.</li>
+<li>Provide better diagnostic messages for invalid commands.</li>
+<li>Implement queries enabling IDEs to provide rich semantic highlighting instead of the simple syntax highlighting currently available (e.g. variables, constants, types, procs and macros could all be styled differently).</li>
+<li>Add support for quick evaluation of snippets of code in the context of the current project.</li>
+<li>Add commands to retrieve information about project layout and compilation settings.</li>
+</ul>
+<p><strong>Related issues</strong>: <a href="https://github.com/Araq/Nimrod/issues/804">#804</a>, <a href="https://github.com/Araq/Nimrod/issues/274">#274</a>, <a href="https://github.com/Araq/Nimrod/issues/325">#325</a>, <a href="https://github.com/Araq/Nimrod/issues/452">#452</a>, <a href="https://github.com/Araq/Nimrod/issues/484">#484</a>, <a href="https://github.com/Araq/Nimrod/issues/474">#474</a>, <a href="https://github.com/Araq/Nimrod/issues/477">#477</a>, <a href="https://github.com/Araq/Nimrod/issues/450">#450</a>, <a href="https://github.com/Araq/Nimrod/issues/449">#449</a>, <a href="https://github.com/Araq/Nimrod/issues/415">#415</a>, <a href="https://github.com/Araq/Nimrod/issues/471">#471</a>, <a href="https://github.com/Araq/Nimrod/issues/344">#344</a></p>
+<p><strong>Bonus points:</strong> Implement &quot;Compiler as a Service&quot; support to major IDEs/text editors such as Light Table, Sublime Text, or Visual Studio.</p>
+<p><strong>Difficulty:</strong> Medium to Hard</p>
+<p><strong>Mentor:</strong> zahary (<a href="http://github.com/zah">@zah</a>)</p>
+<h2>Standard Library</h2>
+<h4>Implement a YAML parser library</h4>
+<p><strong>Desirable skills:</strong> Ability to write efficient parsers.</p>
+<p><strong>Description</strong>:</p>
+<p>The Nimrod standard library currently lacks a YAML parsing module. YAML is a popular &quot;human-readable data serialization format&quot;, its popularity is especially evident in the Ruby community. As such it would be a great addition to Nimrod's standard library. This task requires you to read the <a href="http://yaml.org/spec/">YAML specification</a> and to create a module which will be able to parse YAML data into an AST. Subsequently the parser can be used to create a high-level API to access the data similar to the current design of the <a href="http://nimrod-lang.org/json.html">json</a> module which provides a low-level parser and a higher-level interface which builds on top of the parser.</p>
+<p><strong>Tasks</strong>:</p>
+<ul>
+<li>Write an efficient parser which will turn YAML data into an AST.</li>
+<li>Design and implement an API on top of the AST to query the data contained in the AST easily.</li>
+</ul>
+<p><strong>Expected Result</strong>: A working YAML module with the ability to read all YAML compliant data.</p>
+<p><strong>Bonus points</strong>: Thorough testing of the YAML module to ensure that the parser works as expected.</p>
+<p><strong>Difficulty:</strong> Medium</p>
+<p><strong>Mentor:</strong> Araq (<a href="http://github.com/Araq">@Araq</a>), dom96 (<a href="http://github.com/dom96">@dom96</a>)</p>
+<hr />
+<h4>Enhance the filesystem monitoring module <code>fsmonitor</code></h4>
+<p><strong>Desirable skills:</strong> Knowledge of the Microsoft Windows API.</p>
+<p><strong>Description</strong>:
+Nimrod's standard library currently has a <a href="http://build.nimrod-lang.org/docs/fsmonitor.html"><code>fsmonitor</code></a> (<a href="https://github.com/Araq/Nimrod/blob/devel/lib/pure/fsmonitor.nim">source code</a>) module which allows the programmer to monitor the filesystem for directory and file changes. The problem is that this module currently only supports Linux.</p>
+<p><strong>Tasks</strong>:</p>
+<ul>
+<li>Allow the <code>fsmonitor</code> module to work on Microsoft Windows by using native APIs to gather information about changes in monitored files and directories.</li>
+<li>Revise the <code>fsmonitor</code> module API to decouple Unix/Linux file handle paradigms from the API, allowing easier implementations of multiple native backends.</li>
+<li>Integrate the <code>fsmonitor</code> module's polling mechanism into the new <a href="https://github.com/Araq/Nimrod/blob/newasync/lib/pure/asyncio2.nim">asynchronous IO modules</a>.</li>
+</ul>
+<p><strong>Difficulty:</strong> Easy</p>
+<p><strong>Mentor:</strong> dom96 (<a href="http://github.com/dom96">@dom96</a>)</p>
+<hr />
+<h4>Enhance and expand standard library documentation</h4>
+<p><strong>Desirable skills:</strong> Basic writing and documentation skills, web design and infrastructure setup.</p>
+<p><strong>Description</strong>:
+The <a href="http://nimrod-lang.org/lib.html">Nimrod documentation</a> is generally good but it lacks helpful code examples. It is also using a rather old design which is not on par with some of the documentation of other software projects out there. <a href="https://readthedocs.org/">Read the docs</a> is a good example of attractive as well as readable documentation, it is something we would be after in this project.</p>
+<p><strong>Tasks:</strong></p>
+<ul>
+<li>Ensure that documentation exists for all public methods and modules.</li>
+<li>Create and design new CSS and HTML layouts for the documentation, the design should put readability above eyecandy. That said, the new design should be attractive to developers.</li>
+<li>Add search capabilities to the online documentation.</li>
+<li>Add code examples to all modules and to all procedures (where appropriate).</li>
+</ul>
+<p><strong>Difficulty:</strong> Medium</p>
+<p><strong>Mentor:</strong> zahary (<a href="http://github.com/zah">@zah</a>)</p>
+<hr />
+<h4>Add documentation to the Nimrod compiler internals</h4>
+<p><strong>Desirable skills:</strong> Basic writing and documentation skills, knowledge of how compilers function.</p>
+<p><strong>Description:</strong></p>
+<p>There is currently very little documentation about the way the Nimrod compiler functions. This means that it is difficult for newcomers to contribute to the compiler. This is not helped by the fact that the compiler source code is seldom commented.</p>
+<p>This project aims to improve this situation. You will be tasked with describing how the compiler is structured, the stages of the compilation process etc. You will also be expected to read the source of the compiler and try to explain what the code does using comments where appropriate. Guides on how to debug the compiler would also be welcome.</p>
+<p><strong>Tasks</strong>:</p>
+<ul>
+<li>Add comments to the compiler internals, documenting the various mechanisms and mechanics the compiler uses to analyze and transform nimrod code to the code of the specified backend.</li>
+<li>Write documentation describing the architecture of the compiler.</li>
+</ul>
+<p><strong>Difficulty:</strong> Medium</p>
+<p><strong>Mentor:</strong> Araq (<a href="http://github.com/Araq">@Araq</a>), zahary (<a href="http://github.com/zah">@zah</a>)</p>
+<hr />
+<h4>Improve times module</h4>
+<p><strong>Desirable skills:</strong> Knowledge of date time representations, native time APIs.</p>
+<p><strong>Description</strong>:</p>
+<p>The current times module lacks some useful features. The ability to tell how long ago a certain time occurred is for example missing. This should be implemented using the existing <code>TTimeInterval</code> type which provides a <code>-</code> operator for subtracting two <code>TTimeInfo</code> values. A bug exists in this implementation however which prevents this operation from working in the Julian calendar, this should be
+fixed.</p>
+<p>Some research is also required in this task. Other languages should be looked at to see what their standard library provides in terms of time handling. Features from those languages should be ideally ported over to Nimrod.</p>
+<p><strong>Tasks</strong>:</p>
+<ul>
+<li>Fix limitations to do with time intervals, specifically subtracting a TTimeInterval from a TTimeInfo.</li>
+<li>Provide a <code>$</code> for TTimeInterval. Goal is to be able to get timing info like &quot;5 minutes ago&quot;.</li>
+<li>Look at time handling in other languages and implement missing features.</li>
+</ul>
+<p><strong>Bonus Points</strong>: Ensure that the times module works with the JavaScript backend.</p>
+<p><strong>Difficulty:</strong> Easy</p>
+<p><strong>Mentor:</strong> dom96 (<a href="http://github.com/dom96">@dom96</a>)</p>
+<hr />
+<h4>Add an implementation of the ISAAC psuedorandom number generator</h4>
+<p><strong>Desirable skills:</strong> Pseudo-Random number generation theory, C programming.</p>
+<p><strong>Description:</strong></p>
+<p>The Nimrod standard library currently lacks a native pseudorandom number generator and relies on the C <code>rand</code> function. This project requires you to write an implementation of the [[ISAAC Pseudorandom Number Generator|http://burtleburtle.net/bob/rand/isaacafa.html]] purely in Nimrod.</p>
+<p><strong>Tasks</strong>:</p>
+<ul>
+<li>Create a pure-nimrod implementation of the [[ISAAC Random Number Generator|http://burtleburtle.net/bob/rand/isaacafa.html]] .</li>
+</ul>
+<p><strong>Difficulty:</strong> Medium</p>
+<p><strong>Mentor:</strong> Araq (<a href="http://github.com/Araq">@Araq</a>)</p>
+<hr />
+<h4>Wrap and test the Qt framework</h4>
+<p><strong>Desirable skills:</strong> Knowledge of C++. Experience with the Qt framework is desirable.</p>
+<p><strong>Description</strong>:</p>
+<p>Qt is a widely used GUI framework. Nimrod currently lacks a wrapper for this framework and this task requires you to create this wrapper and to test it. The <code>c2nim</code> tool can be used to mostly automate this process.</p>
+<p><strong>Tasks:</strong></p>
+<ul>
+<li>Wrap the <a href="http://qt-project.org/">Qt framework</a> with the help of the c2nim tool, or otherwise.</li>
+<li>Write tests which use the wrapper.</li>
+</ul>
+<p><strong>Bonus points:</strong> Write high-level bindings which provide an idiomatic Nimrod API on top of the wrapper.</p>
+<p><strong>Difficulty:</strong> Medium</p>
+<p><strong>Mentor:</strong> Araq (<a href="http://github.com/Araq">@Araq</a>), zahary (<a href="http://github.com/zah">@zah</a>)</p>
+<hr />
+<h4>Wrap and test GTK3</h4>
+<p><strong>Desirable skills:</strong> Knowledge of C. Experience with GTK+ is desirable.</p>
+<p><strong>Description</strong>:</p>
+<p>GTK is a fairly popular GUI framework. Nimrod currently has a <a href="https://github.com/nimrod-code/gtk2/tree/master/src">GTK2 wrapper</a> which is outdated. This task will have you wrapping GTK3 with the help of the c2nim tool.</p>
+<p><strong>Tasks</strong>:</p>
+<ul>
+<li>Wrap GTK3 with the help of the c2nim tool, or otherwise.</li>
+<li>Write tests which use the wrapper.</li>
+</ul>
+<p><strong>Bonus Points:</strong> Write high-level bindings which provide an idiomatic Nimrod API on top of the wrapper.</p>
+<p><strong>Difficulty:</strong> Medium</p>
+<p><strong>Mentor:</strong> dom96 (<a href="http://github.com/dom96">@dom96</a>), Araq (<a href="http://github.com/Araq">@Araq</a>)</p>
+<h2>Tools &amp; Infrastructure</h2>
+<h4>Nimbuild</h4>
+<p><strong>Desirable skills</strong>: JSON parsing, modular program construction, inter-process communication.</p>
+<p><strong>Description</strong>:</p>
+<p>Nimbuild is Nimrod's <a href="http://en.wikipedia.org/wiki/Build_farm">build farm</a>. It consists of a <a href="http://build.nimrod-lang.org">website</a>, a builder which bootstraps Nimrod and runs the tester on a wide range of platforms, and an IRC bot which announces commits on the #nimrod IRC channel.</p>
+<p>Nimbuild is currently fairly feature complete but there are some things that can be fixed and implemented. In particular the bootstrap times are not recorded, this piece of information might be useful for us to see how the speed of Nimrod changes as we make modifications to the compiler.</p>
+<p><strong>Tasks:</strong></p>
+<ul>
+<li>Reduce the number of assumptions the Nimrod builder makes about its host system, in order to reduce configuration restrictions. Assumptions include location and usage of external tools, such as git.</li>
+<li>Implement benchmark tests in the builder and generate graphs showing the time taken to perform those benchmarks on the Nimbuild site. This can include bootstrap times, and test times too.</li>
+<li>Generate images showing the status of the build to be shown in Nimrod's Github repo and/or Nimrod's website.</li>
+<li>Improve the download tables on Nimbuild's homepage and generate embeddable download tables for the Nimrod website.</li>
+</ul>
+<p><strong>Difficulty:</strong> Medium</p>
+<p><strong>Mentor:</strong> dom96 (<a href="http://github.com/dom96">@dom96</a>)</p>
+<hr />
+<h4>Babel</h4>
+<p><strong>Desirable skills</strong>: Knowledge of Git and other version control systems.</p>
+<p><strong>Description</strong>:</p>
+<p>Babel is the Nimrod package manager. It is currently very basic and some important features are still missing. Babel packages are stored in user-controlled Git or Mercurial repositories. Because Babel is still very immature greater testing of it is required, especially its dependency resolution. This is already partly tested using the <a href="https://github.com/nimrod-code/babel/blob/master/tests/tester.nim">tester</a> present in the babel repository but the test suite should be expanded.</p>
+<p>Submitting packages is currently a very cumbersome task involving the editing of a JSON file which is present <a href="https://github.com/nimrod-code/packages/blob/master/packages.json">here</a>. This process should be simplified as it is error-prone, babel could be extended to contain a <code>submit</code> command.</p>
+<p>We also currently lack a website which tracks packages similar to Hackage or npm. It would be a welcome addition to our current infrastructure.</p>
+<p><strong>Possible tasks:</strong></p>
+<ul>
+<li>Add support for other VCS' alongside Git and Mercurial.</li>
+<li>Create a website which tracks packages similar to hackage, npm, the <a href="http://code.dlang.org/">DUB registry</a> etc.</li>
+<li>Add support for the removal of packages.</li>
+<li>Automate the package submission process.</li>
+<li>Expand the babel tester to test more dependency scenarios.</li>
+</ul>
+<p><strong>Difficulty:</strong> Medium</p>
+<p><strong>Mentor:</strong> dom96 (<a href="http://github.com/dom96">@dom96</a>)</p>
+<hr />
+<h4>Improve the automation of low-level C bindings</h4>
+<p><strong>Desirable skills:</strong> Knowledge of C</p>
+<p><strong>Description</strong>:
+Nimrod's c2nim tool helps create nimrod bindings for C libraries. However, c2nim does not parse the whole C language, and is not currently supposed to import whole APIs into nimrod mechanically, but rather to serve as a starting point for manual definition of interfaces to C libraries. c2nim is particularly effective in dealing with C's preprocessor macros, but is
+not currently capable of parsing many C header files.</p>
+<p>Make c2nim accept more C declarations than it currently does, and produce corresponding Nimrod declarations. This can be done either by directly filling-in the missing capabilities, or by interfacing it with a mature tool for parsing C code, such as LLVM's CLang or the GCC-XML tool. If one of these tools is used, then it is expected that it would not suffice by itself, but rather augment the current c2nim parser, since these tools have their own limitations. A possible implementation might pass
+the header file once through gcc-xml to parse C declarations, and would use the current c2nim parser on lines that start with '#' to parse preprocessor definitions. c2nim would then process the parsed headers and produce constants, types, macros and proc declarations similar to those that it produces now.</p>
+<p>Although c2nim currently converts function implementations (and not only declarations), this functionality is outside the scope of this task.</p>
+<p><strong>Tasks</strong>:
+Depending on the chosen implementation technique, the tasks would be either:</p>
+<ul>
+<li>
+<p>detect individual deficiencies in c2nim support for .h files and fix them
+or:</p>
+</li>
+<li>
+<p>interface with a feature-complete parser for C, such as that of GCC or CLANG.</p>
+</li>
+<li>
+<p>refactor c2nim so that it can generate declarations from the parsed output of the above parser, rather than directly from .h files as it currently does.</p>
+</li>
+<li>
+<p>combine the output from the previous task with the declarations that c2nim produces for preprocessor macros.</p>
+</li>
+</ul>
+<p><strong>Difficulty:</strong> Medium</p>
+<p><strong>Bonus Points:</strong> support, in addition, a few common c++ constructs that c2nim does not currently support.</p>
+<p><strong>Mentor:</strong> Araq (<a href="http://github.com/Araq">@Araq</a>)</p>
+<hr />
+<h4>Implement re2nim, a lexer generator for nimrod</h4>
+<p><strong>Description:</strong></p>
+<p>Lexer generators are useful tools for writing all sorts of parsers. Currently Nimrod lacks a native Lexer generators. This project involves the implementation of a lexer generator. It should be modelled after <a href="http://re2c.org/">re2c</a> or alternatively it can be based on the wide number of existing lexer generators such as Flex.</p>
+<p>Here is a sketch of a possible implementation:</p>
+<ul>
+<li>Parse regular expressions into an NFA and ensure the attached Nimrod actions are kept around through the next different passes.</li>
+<li>Translate the NFA to an DFA: http://web.cecs.pdx.edu/~harry/compilers/slides/LexicalPart3.pdf</li>
+<li>Minimize the DFA with Hopcroft's algorithm: http://en.wikipedia.org/wiki/DFA_minimization</li>
+<li>Translate the DFA into Nimrod code and attach the actions.</li>
+</ul>
+<p><strong>Desirable skills</strong>: Knowledge of lexer generators. How to translate regexes into DFAs and how to optimize the resulting automatons.</p>
+<p><strong>Difficulty:</strong> Medium to Hard</p>
+<p><strong>Mentor:</strong> zahary (<a href="http://github.com/zah">@zah</a>)</p>
+<hr />
+<h4>Implement a Nimrod backend for the Ragel state machine generator</h4>
+<p><strong>Description:</strong></p>
+<p><a href="http://www.complang.org/ragel/">Ragel</a> is a &quot;finite-state machine compiler with output support for C, C++, C#, Objective-C, D, Java, OCaml, Go, and Ruby source code.&quot; This project involves the implementation of a Nimrod backend for Ragel. This can be based on the large number of pre-existing backends listed previously.</p>
+<p><strong>Desirable skills</strong>: Knowledge of Ragel's internals.</p>
+<p><strong>Difficulty:</strong> Medium</p>
+<p><strong>Mentor:</strong> zahary (<a href="http://github.com/zah">@zah</a>)</p>
+<h1>Template</h1>
+<p>The following is a rough template that each proposal shall use.</p>
+<h4>Short description</h4>
+<p><strong>Desirable skills:</strong> list of desirable skills</p>
+<p><strong>Description:</strong></p>
+<p>Description of the tasks involved.</p>
+<p><strong>Difficulty:</strong> Easy/Medium/Hard</p>
+<p><strong>Mentor:</strong> Potential mentor(s)</p>
+<hr />
+</main>
+<footer>
+<hr>
+<div class="nb-box">
+  <span><span class="nb-small">made with <a href="https://pietroppeter.github.io/nimib/">nimib 🐳</a></span></span>
+  <span></span>
+  <span><button class="nb-small" id="show" onclick="toggleSourceDisplay()">Show Source</button></span>
+</div>
+</footer>
+<section id="source">
+<pre><code class="nim hljs"><span class="hljs-keyword">import</span> strformat, strutils
+<span class="hljs-keyword">import</span> nimib
+<span class="hljs-keyword">import</span> nimoji
+
+nbInit
+
+nbText:<span class="hljs-string">&quot;&quot;&quot;
+# Introduction
+Below is a list of project ideas for [GSoC](https://www.google-melange.com/gsoc/homepage/google/gsoc2014) 2014. These projects require familiarity with the Nimrod programming language so it is absolutely essential that you become familiar with Nimrod ahead of time.
+
+[Nimrod](http://nimrod-lang.org) is a statically typed programming language which compiles primarily to C. Areas of the project you may wish to work on include the [Nimrod compiler](#wiki-nimrod-compiler) which is itself written in Nimrod, Nimrod's [standard library](#wiki-standard-library) and/or the [tools and infrastructure](#wiki-tools--infrastructure) of Nimrod which includes the Nimrod build farm (Nimbuild) and the Nimrod package manager (babel).
+
+To get started you will need to clone the Nimrod repository and then subsequently bootstrap the compiler, instructions for doing this are located [here](https://github.com/Araq/Nimrod#compiling). You can then move onto the [tutorial](http://nimrod-lang.org/tut1.html) and read through the [other documentation](http://nimrod-lang.org/documentation.html) as well.
+
+We encourage you to join the #nimrod IRC channel on Freenode to discuss these projects with the community and our mentors. The Nimrod [Forum](http://forum.nimrod-lang.org) is also available. Because communication is a big part of open source development you are expected to get in touch with us before making your application, failure to do so will put your application at a great disadvantage.
+
+The following list of projects are just some ideas that the community and the developers have come up with. You will be contributing to a programming language so there is a lot of flexibility when it comes to the projects that you can work on, this list is certainly not comprehensive so we are happy to hear any suggestions that you may have.
+
+# Projects
+
+## Nimrod Compiler
+#### Add support for full coroutines
+
+**Desirable skills:** Knowledge of coroutines, C and Assembly language.
+
+**Description:**
+
+Implement proper coroutines that provide light-weight collaborative multi-tasking. The coroutines must be cooperative - this means a coroutine is suspended only when it explicitly yields. The coroutines must never be migrated across threads - this means that of all the coroutines started from a thread, exactly one is running at any point in time while the others are suspended. Other semantic details are to be nailed down as part of the project, see http://www.inf.puc-rio.br/~roberto/docs/corosblp.pdf for a good overview of coroutines.
+
+Nimrod already supports &quot;closure iterators&quot; which are comparable to Python's generators. However closure iterators are much less powerful than proper coroutines because they don't allow capturing the full call stack. This means, for instance, that closure iterators cannot be recursive.
+
+Here is a sketch of a possible implementation, but there are lots of other possibilities to implement full coroutines for Nimrod:
+
+  * Implement the necessary stack switching via inline assembler.
+  * The GC needs to support conservative marking of multiple stacks.
+  * In particular the write barrier in the GC which does the 'isOnStack' check needs to be changed.
+  * Using a bloom filter for quick testing whether an address belongs to some stack is likely to pay off.
+  * Creating a coroutine needs to register a new stack to the GC.
+  * Deleting a coroutine needs to unregister the stack to the GC.
+  * Builtin 'yld' must save the current stack pointer so that the GC knows which part of the stack is really in use.
+
+**Expected Result:** A working coroutine implementation in Nimrod that plays well with the GC.
+
+**Difficulty:** Hard
+
+**Mentor:** Araq ([@Araq](http://github.com/Araq))
+
+___
+#### Add a code generator for OpenCL
+  **Desirable skills:** Good OpenCL knowledge, knowledge of the compiler internals, basics of type theory.
+
+**Description:**
+
+Nimrod currently supports C, C++, Objective C and JavaScript code generation. However to run efficiently on GPUs an OpenCL backend is required. The easy way to do this is to copy OpenCL's low level mode of operation with its different ``private``, ``local``, ``global`` storage and simply provide a nimrodic syntax for OpenCL. So apart from syntactic sugar users get all of Nimrod's meta programming advantages plus good integration into Nimrod's infrastructure.  
+
+The vision is a ``gpu`` pragma that means a proc and all of its dependencies are translated into OpenCL instead of C but can be invoked from ordinary Nimrod code that is translated to C. The ``gpu`` code generator is allowed to only translate a subset of Nimrod, in particular things like function pointers that are not supported by OpenCL do not have to be supported. The compiler should produce a clean error message for unsupported features.
+
+**Expected Result:** The GPU code generator works on a selected set of examples/test cases.
+
+**Tasks:**
+  * Add support for new pointer types in the compiler like ``global``, ``private``.
+  * Add support for work groupss.
+  * Add support for the ``gpu`` pragma that translates to the OpenCL, version 2: https://www.khronos.org/registry/cl/sdk/2.0/docs/man/xhtml/
+
+**Bonus points:** Support version 1.2 of the OpenCL specification: https://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/. This should be significantly harder as version 1.2 doesn't support a shared address space with the host environment.
+
+
+**Difficulty:** Hard
+
+**Mentor:** Araq ([@Araq](http://github.com/Araq))
+
+___
+#### Make Nimrod a viable research platform for Garbage Collection algorithms
+  **Desirable skills:** Familiarity with the various GC approaches and algorithms, knowledge of the compiler codegen modules.
+
+**Description:**
+
+Most of the popular garbage collected languages of today require a separately distributed run-time environment, providing only a predetermined set of garbage collection algorithms. This leaves little room for experimentation with various approaches and condemns GC researchers to develop and test their algorithms on specialized platforms such as the [Jikes RVM](http://jikesrvm.org/) that have limited practical significance. 
+
+In contrast, in Nimrod, the garbage collection algorithm is chosen at compile-time and embedded in the resulting stand-alone native executable. This enables the users to pick a GC algorithm that's most suitable to their project and allows for a proliferation of GC algorithms, developed by independent groups and individuals, without requiring any modifications to be made to the standard Nimrod distribution.
+
+The Nimrod code generator and type system can provide various GC roots marking strategies, various kinds of write/read barriers and all necessary static type information (e.g. static cycle analysis) and a GC implementation will consist only of a single Nimrod module (supplied as a command-line parameter) that
+provides configuration for the code generator and implements the logic of the garbage collection algorithm. This module will be compiled as C code with the rest of the program and it could be easily debugged using standard C/C++ debugging and profiling tools.
+
+**Tasks:**
+  * Add support for precise stack marking
+  * Add support for read barriers and polish the support for Levanoni/Petrank style of write barriers
+  * Implement the infrastructure for picking a user-supplied GC module
+
+**Bonus points:** Implement simple forms of variety of GC algorithms as a proof-of-concept
+
+**Difficulty:** Medium to Hard
+
+**Mentor:** zahary ([@zah](http://github.com/zah))
+
+
+___
+#### Fix/Expand Nimrod's &quot;Compiler as a Service&quot; and idetools features
+**Desirable skills:** Command line argument parsing, good knowledge of compiler internals and theory.
+
+**Description:**
+
+Nimrod's Compiler as a Service feature allows IDEs to query the compiler for things like code suggestions, definition lookups and more. The current implementation works but has some issues.
+
+**Tasks:**
+  * Review and resolve related issues.
+  * Provide commands to execute macros. Allow IDEs to quickly get the code macros generate with different inputs.
+  * Provide a mechanism to track a dirty file without saving it to disk.
+  * Provide better diagnostic messages for invalid commands.
+  * Implement queries enabling IDEs to provide rich semantic highlighting instead of the simple syntax highlighting currently available (e.g. variables, constants, types, procs and macros could all be styled differently).
+  * Add support for quick evaluation of snippets of code in the context of the current project.
+  * Add commands to retrieve information about project layout and compilation settings.
+
+**Related issues**: [#804](https://github.com/Araq/Nimrod/issues/804), [#274](https://github.com/Araq/Nimrod/issues/274), [#325](https://github.com/Araq/Nimrod/issues/325), [#452](https://github.com/Araq/Nimrod/issues/452), [#484](https://github.com/Araq/Nimrod/issues/484), [#474](https://github.com/Araq/Nimrod/issues/474), [#477](https://github.com/Araq/Nimrod/issues/477), [#450](https://github.com/Araq/Nimrod/issues/450), [#449](https://github.com/Araq/Nimrod/issues/449), [#415](https://github.com/Araq/Nimrod/issues/415), [#471](https://github.com/Araq/Nimrod/issues/471), [#344](https://github.com/Araq/Nimrod/issues/344)
+
+**Bonus points:** Implement &quot;Compiler as a Service&quot; support to major IDEs/text editors such as Light Table, Sublime Text, or Visual Studio.
+
+**Difficulty:** Medium to Hard
+
+**Mentor:** zahary ([@zah](http://github.com/zah))
+
+## Standard Library
+
+#### Implement a YAML parser library
+**Desirable skills:** Ability to write efficient parsers.
+
+**Description**:
+
+The Nimrod standard library currently lacks a YAML parsing module. YAML is a popular &quot;human-readable data serialization format&quot;, its popularity is especially evident in the Ruby community. As such it would be a great addition to Nimrod's standard library. This task requires you to read the [YAML specification](http://yaml.org/spec/) and to create a module which will be able to parse YAML data into an AST. Subsequently the parser can be used to create a high-level API to access the data similar to the current design of the [json](http://nimrod-lang.org/json.html) module which provides a low-level parser and a higher-level interface which builds on top of the parser.
+
+**Tasks**:
+* Write an efficient parser which will turn YAML data into an AST.
+* Design and implement an API on top of the AST to query the data contained in the AST easily.
+
+**Expected Result**: A working YAML module with the ability to read all YAML compliant data.
+
+**Bonus points**: Thorough testing of the YAML module to ensure that the parser works as expected.
+
+**Difficulty:** Medium
+
+**Mentor:** Araq ([@Araq](http://github.com/Araq)), dom96 ([@dom96](http://github.com/dom96))
+
+___
+#### Enhance the filesystem monitoring module ``fsmonitor``
+**Desirable skills:** Knowledge of the Microsoft Windows API.
+
+**Description**:
+Nimrod's standard library currently has a [``fsmonitor``](http://build.nimrod-lang.org/docs/fsmonitor.html) ([source code](https://github.com/Araq/Nimrod/blob/devel/lib/pure/fsmonitor.nim)) module which allows the programmer to monitor the filesystem for directory and file changes. The problem is that this module currently only supports Linux.
+
+**Tasks**:
+
+  * Allow the ``fsmonitor`` module to work on Microsoft Windows by using native APIs to gather information about changes in monitored files and directories.
+  * Revise the ``fsmonitor`` module API to decouple Unix/Linux file handle paradigms from the API, allowing easier implementations of multiple native backends.
+  * Integrate the ``fsmonitor`` module's polling mechanism into the new [asynchronous IO modules](https://github.com/Araq/Nimrod/blob/newasync/lib/pure/asyncio2.nim).
+
+**Difficulty:** Easy
+
+**Mentor:** dom96 ([@dom96](http://github.com/dom96))
+
+___
+#### Enhance and expand standard library documentation
+**Desirable skills:** Basic writing and documentation skills, web design and infrastructure setup.
+
+**Description**:
+The [Nimrod documentation](http://nimrod-lang.org/lib.html) is generally good but it lacks helpful code examples. It is also using a rather old design which is not on par with some of the documentation of other software projects out there. [Read the docs](https://readthedocs.org/) is a good example of attractive as well as readable documentation, it is something we would be after in this project.
+
+**Tasks:**
+
+  * Ensure that documentation exists for all public methods and modules.
+  * Create and design new CSS and HTML layouts for the documentation, the design should put readability above eyecandy. That said, the new design should be attractive to developers.
+  * Add search capabilities to the online documentation.
+  * Add code examples to all modules and to all procedures (where appropriate).
+
+**Difficulty:** Medium
+
+**Mentor:** zahary ([@zah](http://github.com/zah))
+
+___
+#### Add documentation to the Nimrod compiler internals
+**Desirable skills:** Basic writing and documentation skills, knowledge of how compilers function.
+
+**Description:**
+
+There is currently very little documentation about the way the Nimrod compiler functions. This means that it is difficult for newcomers to contribute to the compiler. This is not helped by the fact that the compiler source code is seldom commented.
+
+This project aims to improve this situation. You will be tasked with describing how the compiler is structured, the stages of the compilation process etc. You will also be expected to read the source of the compiler and try to explain what the code does using comments where appropriate. Guides on how to debug the compiler would also be welcome.
+
+**Tasks**:
+  * Add comments to the compiler internals, documenting the various mechanisms and mechanics the compiler uses to analyze and transform nimrod code to the code of the specified backend.
+  * Write documentation describing the architecture of the compiler.
+
+**Difficulty:** Medium
+
+**Mentor:** Araq ([@Araq](http://github.com/Araq)), zahary ([@zah](http://github.com/zah))
+
+___
+#### Improve times module
+**Desirable skills:** Knowledge of date time representations, native time APIs.
+
+**Description**:
+
+The current times module lacks some useful features. The ability to tell how long ago a certain time occurred is for example missing. This should be implemented using the existing ``TTimeInterval`` type which provides a ``-`` operator for subtracting two ``TTimeInfo`` values. A bug exists in this implementation however which prevents this operation from working in the Julian calendar, this should be 
+fixed.
+
+Some research is also required in this task. Other languages should be looked at to see what their standard library provides in terms of time handling. Features from those languages should be ideally ported over to Nimrod.
+
+**Tasks**:
+
+  * Fix limitations to do with time intervals, specifically subtracting a TTimeInterval from a TTimeInfo.
+  * Provide a ``$`` for TTimeInterval. Goal is to be able to get timing info like &quot;5 minutes ago&quot;.
+  * Look at time handling in other languages and implement missing features.
+
+**Bonus Points**: Ensure that the times module works with the JavaScript backend.
+
+**Difficulty:** Easy
+
+**Mentor:** dom96 ([@dom96](http://github.com/dom96))
+
+___
+#### Add an implementation of the ISAAC psuedorandom number generator
+**Desirable skills:** Pseudo-Random number generation theory, C programming.
+
+**Description:**
+
+The Nimrod standard library currently lacks a native pseudorandom number generator and relies on the C ``rand`` function. This project requires you to write an implementation of the [[ISAAC Pseudorandom Number Generator|http://burtleburtle.net/bob/rand/isaacafa.html]] purely in Nimrod.
+
+**Tasks**:
+  * Create a pure-nimrod implementation of the [[ISAAC Random Number Generator|http://burtleburtle.net/bob/rand/isaacafa.html]] .
+
+**Difficulty:** Medium
+
+**Mentor:** Araq ([@Araq](http://github.com/Araq))
+
+___
+#### Wrap and test the Qt framework
+**Desirable skills:** Knowledge of C++. Experience with the Qt framework is desirable.
+
+**Description**:
+
+Qt is a widely used GUI framework. Nimrod currently lacks a wrapper for this framework and this task requires you to create this wrapper and to test it. The ``c2nim`` tool can be used to mostly automate this process.
+
+**Tasks:**
+
+* Wrap the [Qt framework](http://qt-project.org/) with the help of the c2nim tool, or otherwise.
+* Write tests which use the wrapper.
+
+**Bonus points:** Write high-level bindings which provide an idiomatic Nimrod API on top of the wrapper.
+
+**Difficulty:** Medium
+
+**Mentor:** Araq ([@Araq](http://github.com/Araq)), zahary ([@zah](http://github.com/zah))
+___
+#### Wrap and test GTK3
+**Desirable skills:** Knowledge of C. Experience with GTK+ is desirable.
+
+**Description**:
+
+GTK is a fairly popular GUI framework. Nimrod currently has a [GTK2 wrapper](https://github.com/nimrod-code/gtk2/tree/master/src) which is outdated. This task will have you wrapping GTK3 with the help of the c2nim tool.
+
+**Tasks**:
+* Wrap GTK3 with the help of the c2nim tool, or otherwise.
+* Write tests which use the wrapper.
+
+**Bonus Points:** Write high-level bindings which provide an idiomatic Nimrod API on top of the wrapper.
+
+**Difficulty:** Medium
+
+**Mentor:** dom96 ([@dom96](http://github.com/dom96)), Araq ([@Araq](http://github.com/Araq))
+
+## Tools &amp; Infrastructure
+#### Nimbuild
+**Desirable skills**: JSON parsing, modular program construction, inter-process communication.
+
+**Description**:
+
+Nimbuild is Nimrod's [build farm](http://en.wikipedia.org/wiki/Build_farm). It consists of a [website](http://build.nimrod-lang.org), a builder which bootstraps Nimrod and runs the tester on a wide range of platforms, and an IRC bot which announces commits on the #nimrod IRC channel.
+
+Nimbuild is currently fairly feature complete but there are some things that can be fixed and implemented. In particular the bootstrap times are not recorded, this piece of information might be useful for us to see how the speed of Nimrod changes as we make modifications to the compiler.
+
+**Tasks:**
+
+  * Reduce the number of assumptions the Nimrod builder makes about its host system, in order to reduce configuration restrictions. Assumptions include location and usage of external tools, such as git.
+  * Implement benchmark tests in the builder and generate graphs showing the time taken to perform those benchmarks on the Nimbuild site. This can include bootstrap times, and test times too.
+  * Generate images showing the status of the build to be shown in Nimrod's Github repo and/or Nimrod's website.
+  * Improve the download tables on Nimbuild's homepage and generate embeddable download tables for the Nimrod website.
+
+**Difficulty:** Medium
+
+**Mentor:** dom96 ([@dom96](http://github.com/dom96))
+
+___
+#### Babel
+**Desirable skills**: Knowledge of Git and other version control systems.
+
+**Description**:
+
+Babel is the Nimrod package manager. It is currently very basic and some important features are still missing. Babel packages are stored in user-controlled Git or Mercurial repositories. Because Babel is still very immature greater testing of it is required, especially its dependency resolution. This is already partly tested using the [tester](https://github.com/nimrod-code/babel/blob/master/tests/tester.nim) present in the babel repository but the test suite should be expanded.
+
+Submitting packages is currently a very cumbersome task involving the editing of a JSON file which is present [here](https://github.com/nimrod-code/packages/blob/master/packages.json). This process should be simplified as it is error-prone, babel could be extended to contain a ``submit`` command.
+
+We also currently lack a website which tracks packages similar to Hackage or npm. It would be a welcome addition to our current infrastructure.
+
+**Possible tasks:**
+  * Add support for other VCS' alongside Git and Mercurial.
+  * Create a website which tracks packages similar to hackage, npm, the [DUB registry](http://code.dlang.org/) etc.
+  * Add support for the removal of packages.
+  * Automate the package submission process.
+  * Expand the babel tester to test more dependency scenarios.
+
+**Difficulty:** Medium
+
+**Mentor:** dom96 ([@dom96](http://github.com/dom96))
+
+___
+#### Improve the automation of low-level C bindings
+
+**Desirable skills:** Knowledge of C
+
+**Description**:
+Nimrod's c2nim tool helps create nimrod bindings for C libraries. However, c2nim does not parse the whole C language, and is not currently supposed to import whole APIs into nimrod mechanically, but rather to serve as a starting point for manual definition of interfaces to C libraries. c2nim is particularly effective in dealing with C's preprocessor macros, but is
+not currently capable of parsing many C header files.
+
+Make c2nim accept more C declarations than it currently does, and produce corresponding Nimrod declarations. This can be done either by directly filling-in the missing capabilities, or by interfacing it with a mature tool for parsing C code, such as LLVM's CLang or the GCC-XML tool. If one of these tools is used, then it is expected that it would not suffice by itself, but rather augment the current c2nim parser, since these tools have their own limitations. A possible implementation might pass 
+the header file once through gcc-xml to parse C declarations, and would use the current c2nim parser on lines that start with '#' to parse preprocessor definitions. c2nim would then process the parsed headers and produce constants, types, macros and proc declarations similar to those that it produces now.
+
+Although c2nim currently converts function implementations (and not only declarations), this functionality is outside the scope of this task.
+
+**Tasks**:
+Depending on the chosen implementation technique, the tasks would be either:
+  * detect individual deficiencies in c2nim support for .h files and fix them
+or:
+  * interface with a feature-complete parser for C, such as that of GCC or CLANG.
+  * refactor c2nim so that it can generate declarations from the parsed output of the above parser, rather than directly from .h files as it currently does.
+  * combine the output from the previous task with the declarations that c2nim produces for preprocessor macros.
+
+**Difficulty:** Medium
+
+**Bonus Points:** support, in addition, a few common c++ constructs that c2nim does not currently support.
+
+**Mentor:** Araq ([@Araq](http://github.com/Araq))
+
+___
+#### Implement re2nim, a lexer generator for nimrod
+
+**Description:**
+
+Lexer generators are useful tools for writing all sorts of parsers. Currently Nimrod lacks a native Lexer generators. This project involves the implementation of a lexer generator. It should be modelled after [re2c](http://re2c.org/) or alternatively it can be based on the wide number of existing lexer generators such as Flex.
+
+Here is a sketch of a possible implementation:
+ 
+  * Parse regular expressions into an NFA and ensure the attached Nimrod actions are kept around through the next different passes.
+  * Translate the NFA to an DFA: http://web.cecs.pdx.edu/~harry/compilers/slides/LexicalPart3.pdf
+  * Minimize the DFA with Hopcroft's algorithm: http://en.wikipedia.org/wiki/DFA_minimization
+  * Translate the DFA into Nimrod code and attach the actions.
+
+**Desirable skills**: Knowledge of lexer generators. How to translate regexes into DFAs and how to optimize the resulting automatons. 
+
+**Difficulty:** Medium to Hard
+
+**Mentor:** zahary ([@zah](http://github.com/zah))
+___
+#### Implement a Nimrod backend for the Ragel state machine generator
+
+**Description:**
+
+[Ragel](http://www.complang.org/ragel/) is a &quot;finite-state machine compiler with output support for C, C++, C#, Objective-C, D, Java, OCaml, Go, and Ruby source code.&quot; This project involves the implementation of a Nimrod backend for Ragel. This can be based on the large number of pre-existing backends listed previously.
+
+**Desirable skills**: Knowledge of Ragel's internals.
+
+**Difficulty:** Medium
+
+**Mentor:** zahary ([@zah](http://github.com/zah))
+
+# Template
+
+The following is a rough template that each proposal shall use.
+
+#### Short description
+
+**Desirable skills:** list of desirable skills
+
+**Description:**
+
+Description of the tasks involved.
+
+**Difficulty:** Easy/Medium/Hard
+
+**Mentor:** Potential mentor(s)
+
+___&quot;&quot;&quot;</span>
+nbSave()
+</code></pre>
+</section><script>
+function toggleSourceDisplay() {
+  var btn = document.getElementById("show")
+  var source = document.getElementById("source");
+  if (btn.innerHTML=="Show Source") {
+    btn.innerHTML = "Hide Source";
+    source.style.display = "block";
+  } else {
+    btn.innerHTML = "Show Source";
+    source.style.display = "none";
+  }
+}
+</script></body>
+</html>

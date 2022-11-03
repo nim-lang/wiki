@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <title>nimwiki/IRC_guidelines.nim</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>🐳</text></svg>">
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <link rel='stylesheet' href='https://unpkg.com/normalize.css'>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/light.min.css">
+  <link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/pietroppeter/nimib/assets/atom-one-light.css'>
+  <style>
+.nb-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nb-small {
+  font-size: 0.8rem;
+}
+button.nb-small {
+  float: right;
+  padding: 2px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+section#source {
+  display:none
+}
+
+.nb-output {
+  line-height: 1.15;
+}
+</style>
+  
+</head>
+<body>
+<header>
+<div class="nb-box">
+  <span><a href="..">🏡</a></span>
+  <span><code>nimwiki/IRC_guidelines.nim</code></span>
+  <span><a href="https://github.com/dlesnoff/nim-wiki"><svg aria-hidden="true" width="1.2em" height="1.2em" style="vertical-align: middle;" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59c.4.07.55-.17.55-.38c0-.19-.01-.82-.01-1.49c-2.01.37-2.53-.49-2.69-.94c-.09-.23-.48-.94-.82-1.13c-.28-.15-.68-.52-.01-.53c.63-.01 1.08.58 1.23.82c.72 1.21 1.87.87 2.33.66c.07-.52.28-.87.51-1.07c-1.78-.2-3.64-.89-3.64-3.95c0-.87.31-1.59.82-2.15c-.08-.2-.36-1.02.08-2.12c0 0 .67-.21 2.2.82c.64-.18 1.32-.27 2-.27c.68 0 1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82c.44 1.1.16 1.92.08 2.12c.51.56.82 1.27.82 2.15c0 3.07-1.87 3.75-3.65 3.95c.29.25.54.73.54 1.48c0 1.07-.01 1.93-.01 2.2c0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill="#000"></path></svg></a></span>
+</div>
+<hr>
+</header><main>
+<h2>Moderator guidelines</h2>
+<p>We aim to be an inclusive community and as such you should refrain from kicking and banning users from the #nim IRC channel. If an argument goes out of hand then you may silence the users involved for a length of time that is no longer than 15 minutes. Kicking/Banning should be reserved for the absolute last resort, that is, if the user is intentionally causing chaos in the IRC channel despite many warnings.</p>
+<p><strong>Some useful tips in Ubuntu's guidelines as well: https://wiki.ubuntu.com/IRC/IrcTeam/OperatorGuide</strong></p>
+<h2>How To</h2>
+<p>The following commands can be executed by sending them via the text box that you ordinarily use to speak with people.</p>
+<h3>Ban using ChanServ</h3>
+<p><strong>This is recommended when dealing with trolls</strong></p>
+<p><code>/msg chanserv akick #nim add *!*@*ip.185.95.206.58 !T 20d</code></p>
+<p>Replace <code>ip.185.95.206.58</code> with the webchat IP, or with whatever the user's hostname is.</p>
+<p>This will cause ChanServ to automatically kick and ban any users that match the hostname mask for 20 days.</p>
+<h3>Quiet user</h3>
+<p>First you need to get the <code>o</code> flag on yourself with <code>/msg ChanServ op #nim</code>.</p>
+<p>To mute somebody in the channel use the following command: <code>/mode #nim +q &lt;MASK&gt;</code> where <code>&lt;MASK&gt;</code> is how the user that will be muted is determined.</p>
+<p>If for example the user's nickname (that you want to mute) is 'NimIsAwesome' then you can use the following mask: <code>NimIsAwesome!*@*</code>.</p>
+<p>If you know the account that the user is logged in under (you can check this via /whois). Then you can use <code>$a:accountName</code> as the mask.</p>
+<p>For more info about the masks take a look at the Freenode docs <a href="https://freenode.net/using_the_network.shtml">here</a>.</p>
+<h3>Quiet every webchat user</h3>
+<p>After you get the <code>o</code> flag (<code>/msg chanserv op #nim</code>), just use the following: <code>/mode #nim +q *!*@*gateway/web/freenode/ip.*</code>.</p>
+<p>Keep in mind that this will mute all webchat users! It is useful when trolls are connecting via different IPs using the webchat though. You can also set exemptions on certain users who you know are safe: <code>/mode #nim +e &lt;username&gt;</code>.</p>
+<p><strong>If you forgot what mask you banned/muted</strong>: <code>/mode q</code> or <code>/mode b</code>.</p>
+<h3>Quiet every unregistered user</h3>
+<p>Just <code>/mode #nim +q $~a</code>.</p>
+<h3>Get in touch with Freenode staff</h3>
+<p>Do highlight somebody from Freenode if the infamous troll is attacking our channel.</p>
+<p><code>/stats p</code> to get a list of Freenode staff members</p>
+<p>or ask in #freenode for a staff member. We also have <code>Fuchs</code> idling in our channel to monitor it right now.</p>
+<h3>Redirect webchat users to #nim-web</h3>
+<p>Set a ban on <code>*!*@gateway/web/freenode*$#nim-web</code>.</p>
+<p>During a spam attack such as the one that was <a href="https://freenode.net/news/spambot-attack">occurring on 01-08-2018</a>, we just redirected all new users to #nim-web: <code>/ban *!*@*$#nim-web</code>.</p>
+<h3>Reduced moderation</h3>
+<p>The <code>+z</code> channel mode allows operators to see messages sent by quietened users. See here for reference: https://freenode.net/kb/answer/channelmodes</p>
+<h2>Useful links</h2>
+<ul>
+<li>https://freenode.net/kb/all</li>
+</ul>
+</main>
+<footer>
+<hr>
+<div class="nb-box">
+  <span><span class="nb-small">made with <a href="https://pietroppeter.github.io/nimib/">nimib 🐳</a></span></span>
+  <span></span>
+  <span><button class="nb-small" id="show" onclick="toggleSourceDisplay()">Show Source</button></span>
+</div>
+</footer>
+<section id="source">
+<pre><code class="nim hljs"><span class="hljs-keyword">import</span> strformat, strutils
+<span class="hljs-keyword">import</span> nimib
+<span class="hljs-keyword">import</span> nimoji
+
+nbInit
+
+nbText:<span class="hljs-string">&quot;&quot;&quot;
+## Moderator guidelines
+
+We aim to be an inclusive community and as such you should refrain from kicking and banning users from the #nim IRC channel. If an argument goes out of hand then you may silence the users involved for a length of time that is no longer than 15 minutes. Kicking/Banning should be reserved for the absolute last resort, that is, if the user is intentionally causing chaos in the IRC channel despite many warnings.
+
+**Some useful tips in Ubuntu's guidelines as well: https://wiki.ubuntu.com/IRC/IrcTeam/OperatorGuide**
+
+## How To
+
+The following commands can be executed by sending them via the text box that you ordinarily use to speak with people.
+
+### Ban using ChanServ
+
+**This is recommended when dealing with trolls**
+
+`/msg chanserv akick #nim add *!*@*ip.185.95.206.58 !T 20d`
+
+Replace `ip.185.95.206.58` with the webchat IP, or with whatever the user's hostname is.
+
+This will cause ChanServ to automatically kick and ban any users that match the hostname mask for 20 days.
+
+### Quiet user
+
+First you need to get the ``o`` flag on yourself with ``/msg ChanServ op #nim``.
+
+To mute somebody in the channel use the following command: ``/mode #nim +q &lt;MASK&gt;`` where ``&lt;MASK&gt;`` is how the user that will be muted is determined.
+
+If for example the user's nickname (that you want to mute) is 'NimIsAwesome' then you can use the following mask: ``NimIsAwesome!*@*``.
+
+If you know the account that the user is logged in under (you can check this via /whois). Then you can use ``$a:accountName`` as the mask.
+
+For more info about the masks take a look at the Freenode docs [here](https://freenode.net/using_the_network.shtml).
+
+### Quiet every webchat user
+
+After you get the ``o`` flag (``/msg chanserv op #nim``), just use the following: ``/mode #nim +q *!*@*gateway/web/freenode/ip.*``.
+
+Keep in mind that this will mute all webchat users! It is useful when trolls are connecting via different IPs using the webchat though. You can also set exemptions on certain users who you know are safe: ``/mode #nim +e &lt;username&gt;``.
+
+**If you forgot what mask you banned/muted**: ``/mode q`` or ``/mode b``.
+
+### Quiet every unregistered user
+
+Just ``/mode #nim +q $~a``.
+
+### Get in touch with Freenode staff
+
+Do highlight somebody from Freenode if the infamous troll is attacking our channel.
+
+``/stats p`` to get a list of Freenode staff members
+
+or ask in #freenode for a staff member. We also have ``Fuchs`` idling in our channel to monitor it right now.
+
+### Redirect webchat users to #nim-web
+
+Set a ban on ``*!*@gateway/web/freenode*$#nim-web``.
+
+During a spam attack such as the one that was [occurring on 01-08-2018](https://freenode.net/news/spambot-attack), we just redirected all new users to #nim-web: ``/ban *!*@*$#nim-web``.
+
+### Reduced moderation
+
+The ``+z`` channel mode allows operators to see messages sent by quietened users. See here for reference: https://freenode.net/kb/answer/channelmodes
+
+## Useful links
+* https://freenode.net/kb/all&quot;&quot;&quot;</span>
+nbSave()
+</code></pre>
+</section><script>
+function toggleSourceDisplay() {
+  var btn = document.getElementById("show")
+  var source = document.getElementById("source");
+  if (btn.innerHTML=="Show Source") {
+    btn.innerHTML = "Hide Source";
+    source.style.display = "block";
+  } else {
+    btn.innerHTML = "Show Source";
+    source.style.display = "none";
+  }
+}
+</script></body>
+</html>

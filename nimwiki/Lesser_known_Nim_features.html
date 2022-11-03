@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <title>nimwiki/Lesser_known_Nim_features.nim</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>🐳</text></svg>">
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <link rel='stylesheet' href='https://unpkg.com/normalize.css'>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/light.min.css">
+  <link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/pietroppeter/nimib/assets/atom-one-light.css'>
+  <style>
+.nb-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nb-small {
+  font-size: 0.8rem;
+}
+button.nb-small {
+  float: right;
+  padding: 2px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+section#source {
+  display:none
+}
+
+.nb-output {
+  line-height: 1.15;
+}
+</style>
+  
+</head>
+<body>
+<header>
+<div class="nb-box">
+  <span><a href="..">🏡</a></span>
+  <span><code>nimwiki/Lesser_known_Nim_features.nim</code></span>
+  <span><a href="https://github.com/dlesnoff/nim-wiki"><svg aria-hidden="true" width="1.2em" height="1.2em" style="vertical-align: middle;" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59c.4.07.55-.17.55-.38c0-.19-.01-.82-.01-1.49c-2.01.37-2.53-.49-2.69-.94c-.09-.23-.48-.94-.82-1.13c-.28-.15-.68-.52-.01-.53c.63-.01 1.08.58 1.23.82c.72 1.21 1.87.87 2.33.66c.07-.52.28-.87.51-1.07c-1.78-.2-3.64-.89-3.64-3.95c0-.87.31-1.59.82-2.15c-.08-.2-.36-1.02.08-2.12c0 0 .67-.21 2.2.82c.64-.18 1.32-.27 2-.27c.68 0 1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82c.44 1.1.16 1.92.08 2.12c.51.56.82 1.27.82 2.15c0 3.07-1.87 3.75-3.65 3.95c.29.25.54.73.54 1.48c0 1.07-.01 1.93-.01 2.2c0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill="#000"></path></svg></a></span>
+</div>
+<hr>
+</header><main>
+<h3>Implicit range type:</h3>
+<pre><code class="language-nim"># `a` can accept values 0, 1, 2, 3
+var a: 0 .. 3 = 2 # ok
+a = 6 # compile error
+
+a = 0; a.inc 10 # runtime error OverflowDefect
+
+type
+  Test = object
+    port: 1 .. 65535
+
+let t = Test(port: 70000) # error
+</code></pre>
+<h3>Less known examples of Nim argument passing syntax</h3>
+<p>Both of these ways are actually used with templates/macros, but not a lot of people realise that you can use them with normal procs (because in Nim a code block evaluates to the last expression in it if that block needs to return a value)</p>
+<pre><code class="language-nim"># first example
+proc tata(a, b: int) = 
+  echo a + b
+
+tata(5): 3 # 8
+
+tata():
+  5
+do:
+  3
+
+# another way of writing the second example
+tata do:
+  5
+do:
+  3
+</code></pre>
+<p>See <a href="https://nim-lang.org/docs/manual_experimental.html#do-notation">do notation</a></p>
+<h3>lvalue type conversion for distinct or equivalent types, better explained with code:</h3>
+<pre><code class="language-nim">type
+  Dollar = distinct int
+
+var a = 5.Dollar
+int(a) = 3
+</code></pre>
+<p>Documented in https://nim-lang.org/docs/manual.html#type-relations-convertible-relation (last sentence in that section)</p>
+<h3>Using enums as array indexes</h3>
+<p>Since enums are Ordinal types, they can be used for indexing arrays.
+This is much faster and uses less memory than a hash table:</p>
+<pre><code class="language-nim">type
+  Pet = enum
+    Cat, Dog, Parrot
+
+# Here we explicitly specify indexes
+const my_pets = [
+  Cat: &quot;meow&quot;,
+  Dog: &quot;woof&quot;,
+  Parrot: &quot;hello world!&quot;
+]
+echo my_pets[Parrot]
+
+# Or without indexes:
+const other: array[Pet, string] = [
+  &quot;meow&quot;, &quot;woof&quot;, &quot;bwak&quot;
+]
+</code></pre>
+<h3>Changing start index for arrays</h3>
+<p>It is possible to have Nim arrays with indexes that don't start at 0:</p>
+<pre><code class="language-nim">let data: array[3 .. 5, int] = [1, 2, 3]
+echo data[4] # 2
+
+let other: array[-5 .. -2, int] = [3, 5, 7, 9]
+echo other[-3] # 7
+</code></pre>
+<h3>One interesting example of command invocation syntax:</h3>
+<pre><code class="language-nim"># Same as if unlikely(5 &gt; 3)
+# or if (unlikely) 5 &gt; 3
+if(unlikely) 5 &gt; 3:
+  echo &quot;not possible&quot;
+else:
+  echo &quot;true&quot;
+
+(echo)5 # Same as echo 5 or echo(5)
+</code></pre>
+<h4>Try / except expressions</h4>
+<p>You can use try / except as an expression:</p>
+<pre><code class="language-nim">import strutils
+
+let myint =
+  try:
+    parseInt(&quot;not a number&quot;)
+  except ValueError:
+    -1
+</code></pre>
+<p>Documented at https://nim-lang.org/docs/manual.html#exception-handling-try-expression</p>
+<h4>Overloading based on the named argument</h4>
+<pre><code class="language-nim">proc foo(a: int) =
+  echo &quot;argument a: &quot;, a
+
+proc foo(b: int) =
+  echo &quot;argument b: &quot;, b
+
+foo(a=1)
+foo(b=2)
+foo(1)  # compilation error: ambiguous call
+</code></pre>
+<p>Documented in https://nim-lang.org/docs/manual_experimental.html#named-argument-overloading</p>
+<h4>(Ab)using statement list expressions to allow using parenthesis like braces in Nim:</h4>
+<pre><code class="language-nim">proc square(inSeq: seq[float]): seq[float] = (
+  result = newSeq[float](len(inSeq));
+  for i, v in inSeq: (
+    result[i] = v * v;
+  )
+)
+
+echo square(@[1.0, 2, 3])
+</code></pre>
+<p>See https://nim-lang.org/docs/manual.html#statements-and-expressions-statement-list-expression</p>
+<h4>Using complex expressions based on other arguments as default arguments in procedures:</h4>
+<pre><code class="language-nim">proc mytest(a: string, b = &quot;hello &quot; &amp; $(len(a) + 5)) =  
+  echo b
+
+mytest(&quot;hello world&quot;)
+</code></pre>
+<p>That example is a bit stupid, but it gives you an idea of what is possible :)</p>
+<p>A more complex example which also makes use of the <code>static[int]</code> argument:</p>
+<pre><code class="language-nim">type
+  Lexer = object
+    buf: seq[string]
+    idx: int
+
+func `[]`(l: Lexer, idx: static[int]): string = 
+  ### Get token relative to current position - only works with literal integers
+  l.buf[l.idx + idx]
+
+func `[]`(l: Lexer, idx: int = l.idx): string = 
+  ### Get current token by default but can get one at specific index if parameter is provided
+  l.buf[idx]
+
+func next(l: var Lexer) = inc l.idx
+
+var buf = Lexer(buf: @[&quot;hello&quot;, &quot;world&quot;, &quot;nice&quot;])
+
+echo buf[] # Get current token
+echo buf[+2] # Check to next tokens
+buf.next() # Move to next token
+echo buf[-1] # Prevous
+for i in 0 ..&lt; buf.buf.len:
+  echo buf[i] # Iterate over all tokens
+</code></pre>
+<p>Or the last, craziest example:</p>
+<pre><code class="language-nim">proc tmp(a = 12, b = a + 2, c = ((
+  block:
+    var buf: string
+    for i in 0 .. 2:
+      buf &amp;= &quot; * &quot; &amp; $i
+
+    buf
+))
+) = echo b, c
+
+tmp(b = 122)
+</code></pre>
+<h4><a href="https://nim-lang.org/docs/manual.html#statements-and-expressions-using-statement"><code>using</code> statement</a></h4>
+<p>For modules where some kind of common state object is being passed around as argument to all procs it quickly becomes annoying to write it over and over again, especially if it has name that is longer than several characters. One possible workaround is to use type alias like <code>type Ps = ProcessingState</code> or try to use shorter names, but <code>using</code> statement is a better solution.</p>
+<p>You can override type of the <code>pc</code> parameter - <code>using</code> only provides the default fallback type.</p>
+<pre><code class="language-nim">type 
+  ProcessingContext = object
+    env: seq[string]
+
+using 
+  pc: ProcessingContext
+
+# Argument type is inferred from `using`
+proc doThings1(pc; args: seq[int]) = 
+  #              ^
+  #              Note that semicolon (`;`) should be used to separate arguments
+  #              with implicit types (declared with `using`) declaration
+  static: echo &quot;1 &quot;, typeof pc
+  echo pc.env
+
+# Written explicitly
+proc doThings2(pc: ProcessingContext, args: seq[int]) =
+  #                ^                ^
+  #                |                If type is written explicitly you can use
+  #                |                regular comma (`,`)                      
+  #                Can set parameter type explicitly. Not needed with `using` but
+  #                still possible.
+  static: echo &quot;2 &quot;, typeof pc
+  echo pc.env
+
+# Override argument type
+proc doThings3(pc: int, args: seq[int]) =
+  static: echo &quot;3 &quot;, typeof pc
+</code></pre>
+<p>Output:</p>
+<pre><code>1 ProcessingContext
+2 ProcessingContext
+3 int
+</code></pre>
+<h3>Python-style indexing operators with commas</h3>
+<p>Code speaks for itself:</p>
+<pre><code class="language-nim">type
+  MyArr = array[8, array[8, int]]
+
+proc `[]`(b: MyArr, r, c: int): int = 
+  b[r][c]
+
+proc `[]=`(b: var MyArr, r, c: int, val: int) = 
+  b[r][c] = val
+
+var b: MyArr
+
+b[0, 3] = 5
+echo b[0, 3]
+``` 
+
+### Iteration over `static` values
+
+Iterate over collection of `static` values:
+
+```nim
+import strscans
+
+for ch in fields((&quot;a&quot;, &quot;hay$i&quot;)):
+  var i: int
+  if scanf(&quot;hay12&quot;, ch, i):
+    echo i
+</code></pre>
+<p>Regular iteration over <code>[&quot;a&quot;, &quot;hay$i&quot;]</code> would make <code>ch</code> just a <code>string</code>,
+but with <code>fields</code> iterator loop is unrolled, so <code>ch</code> is a <code>static[string]</code>,
+making it possible to use with <code>scanf()</code> which accepts compile-time
+constant as it's second argument.</p>
+<h3>Wrapping C #define macro</h3>
+<p>C defines macros can be wrapped like any procedure.</p>
+<p>For example the coz profiler https://github.com/plasma-umass/coz/blob/381cbe5/include/coz.h#L83
+exposes the following define for end users:</p>
+<pre><code class="language-C">#define COZ_PROGRESS_NAMED(name) COZ_INCREMENT_COUNTER(COZ_COUNTER_TYPE_THROUGHPUT, name)
+</code></pre>
+<p>This can be wrapped with</p>
+<pre><code class="language-Nim">proc coz_progress_named*(name: cstring) {.importc: &quot;COZ_PROGRESS_NAMED&quot;, header:&quot;path/to/coz.h&quot;.}
+</code></pre>
+</main>
+<footer>
+<hr>
+<div class="nb-box">
+  <span><span class="nb-small">made with <a href="https://pietroppeter.github.io/nimib/">nimib 🐳</a></span></span>
+  <span></span>
+  <span><button class="nb-small" id="show" onclick="toggleSourceDisplay()">Show Source</button></span>
+</div>
+</footer>
+<section id="source">
+<pre><code class="nim hljs"><span class="hljs-keyword">import</span> strformat, strutils
+<span class="hljs-keyword">import</span> nimib
+<span class="hljs-keyword">import</span> nimoji
+
+nbInit
+
+nbText:<span class="hljs-string">&quot;&quot;&quot;
+### Implicit range type:
+
+```nim
+# `a` can accept values 0, 1, 2, 3
+var a: 0 .. 3 = 2 # ok
+a = 6 # compile error
+
+a = 0; a.inc 10 # runtime error OverflowDefect
+
+type
+  Test = object
+    port: 1 .. 65535
+
+let t = Test(port: 70000) # error
+```
+
+### Less known examples of Nim argument passing syntax
+
+Both of these ways are actually used with templates/macros, but not a lot of people realise that you can use them with normal procs (because in Nim a code block evaluates to the last expression in it if that block needs to return a value)
+
+```nim
+# first example
+proc tata(a, b: int) = 
+  echo a + b
+
+tata(5): 3 # 8
+
+tata():
+  5
+do:
+  3
+
+# another way of writing the second example
+tata do:
+  5
+do:
+  3
+```
+
+See [do notation](https://nim-lang.org/docs/manual_experimental.html#do-notation)
+
+### lvalue type conversion for distinct or equivalent types, better explained with code:
+
+```nim
+type
+  Dollar = distinct int
+
+var a = 5.Dollar
+int(a) = 3
+```
+
+Documented in https://nim-lang.org/docs/manual.html#type-relations-convertible-relation (last sentence in that section)
+
+### Using enums as array indexes
+
+Since enums are Ordinal types, they can be used for indexing arrays.
+This is much faster and uses less memory than a hash table:
+
+```nim
+type
+  Pet = enum
+    Cat, Dog, Parrot
+
+# Here we explicitly specify indexes
+const my_pets = [
+  Cat: &quot;meow&quot;,
+  Dog: &quot;woof&quot;,
+  Parrot: &quot;hello world!&quot;
+]
+echo my_pets[Parrot]
+
+# Or without indexes:
+const other: array[Pet, string] = [
+  &quot;meow&quot;, &quot;woof&quot;, &quot;bwak&quot;
+]
+```
+
+### Changing start index for arrays
+It is possible to have Nim arrays with indexes that don't start at 0:
+
+```nim
+let data: array[3 .. 5, int] = [1, 2, 3]
+echo data[4] # 2
+
+let other: array[-5 .. -2, int] = [3, 5, 7, 9]
+echo other[-3] # 7
+```
+
+### One interesting example of command invocation syntax:
+
+
+```nim
+# Same as if unlikely(5 &gt; 3)
+# or if (unlikely) 5 &gt; 3
+if(unlikely) 5 &gt; 3:
+  echo &quot;not possible&quot;
+else:
+  echo &quot;true&quot;
+
+(echo)5 # Same as echo 5 or echo(5)
+```
+
+#### Try / except expressions
+
+You can use try / except as an expression:
+
+```nim
+import strutils
+
+let myint =
+  try:
+    parseInt(&quot;not a number&quot;)
+  except ValueError:
+    -1
+```
+
+Documented at https://nim-lang.org/docs/manual.html#exception-handling-try-expression
+
+#### Overloading based on the named argument
+
+```nim
+proc foo(a: int) =
+  echo &quot;argument a: &quot;, a
+
+proc foo(b: int) =
+  echo &quot;argument b: &quot;, b
+
+foo(a=1)
+foo(b=2)
+foo(1)  # compilation error: ambiguous call
+```
+
+Documented in https://nim-lang.org/docs/manual_experimental.html#named-argument-overloading
+
+#### (Ab)using statement list expressions to allow using parenthesis like braces in Nim:
+
+```nim
+proc square(inSeq: seq[float]): seq[float] = (
+  result = newSeq[float](len(inSeq));
+  for i, v in inSeq: (
+    result[i] = v * v;
+  )
+)
+
+echo square(@[1.0, 2, 3])
+```
+See https://nim-lang.org/docs/manual.html#statements-and-expressions-statement-list-expression
+
+#### Using complex expressions based on other arguments as default arguments in procedures:
+
+```nim
+proc mytest(a: string, b = &quot;hello &quot; &amp; $(len(a) + 5)) =  
+  echo b
+
+mytest(&quot;hello world&quot;)
+```
+
+That example is a bit stupid, but it gives you an idea of what is possible :)
+
+A more complex example which also makes use of the `static[int]` argument:
+
+```nim
+type
+  Lexer = object
+    buf: seq[string]
+    idx: int
+
+func `[]`(l: Lexer, idx: static[int]): string = 
+  ### Get token relative to current position - only works with literal integers
+  l.buf[l.idx + idx]
+
+func `[]`(l: Lexer, idx: int = l.idx): string = 
+  ### Get current token by default but can get one at specific index if parameter is provided
+  l.buf[idx]
+
+func next(l: var Lexer) = inc l.idx
+
+var buf = Lexer(buf: @[&quot;hello&quot;, &quot;world&quot;, &quot;nice&quot;])
+
+echo buf[] # Get current token
+echo buf[+2] # Check to next tokens
+buf.next() # Move to next token
+echo buf[-1] # Prevous
+for i in 0 ..&lt; buf.buf.len:
+  echo buf[i] # Iterate over all tokens
+```
+
+Or the last, craziest example:
+```nim
+proc tmp(a = 12, b = a + 2, c = ((
+  block:
+    var buf: string
+    for i in 0 .. 2:
+      buf &amp;= &quot; * &quot; &amp; $i
+
+    buf
+))
+) = echo b, c
+
+tmp(b = 122)
+```
+
+#### [`using` statement](https://nim-lang.org/docs/manual.html#statements-and-expressions-using-statement)
+
+For modules where some kind of common state object is being passed around as argument to all procs it quickly becomes annoying to write it over and over again, especially if it has name that is longer than several characters. One possible workaround is to use type alias like `type Ps = ProcessingState` or try to use shorter names, but `using` statement is a better solution.
+
+You can override type of the `pc` parameter - `using` only provides the default fallback type.
+
+```nim
+type 
+  ProcessingContext = object
+    env: seq[string]
+
+using 
+  pc: ProcessingContext
+
+# Argument type is inferred from `using`
+proc doThings1(pc; args: seq[int]) = 
+  #              ^
+  #              Note that semicolon (`;`) should be used to separate arguments
+  #              with implicit types (declared with `using`) declaration
+  static: echo &quot;1 &quot;, typeof pc
+  echo pc.env
+
+# Written explicitly
+proc doThings2(pc: ProcessingContext, args: seq[int]) =
+  #                ^                ^
+  #                |                If type is written explicitly you can use
+  #                |                regular comma (`,`)                      
+  #                Can set parameter type explicitly. Not needed with `using` but
+  #                still possible.
+  static: echo &quot;2 &quot;, typeof pc
+  echo pc.env
+
+# Override argument type
+proc doThings3(pc: int, args: seq[int]) =
+  static: echo &quot;3 &quot;, typeof pc
+```
+
+Output:
+
+```
+1 ProcessingContext
+2 ProcessingContext
+3 int
+```
+
+### Python-style indexing operators with commas
+Code speaks for itself:
+```nim
+type
+  MyArr = array[8, array[8, int]]
+
+proc `[]`(b: MyArr, r, c: int): int = 
+  b[r][c]
+
+proc `[]=`(b: var MyArr, r, c: int, val: int) = 
+  b[r][c] = val
+
+var b: MyArr
+
+b[0, 3] = 5
+echo b[0, 3]
+``` 
+
+### Iteration over `static` values
+
+Iterate over collection of `static` values:
+
+```nim
+import strscans
+
+for ch in fields((&quot;a&quot;, &quot;hay$i&quot;)):
+  var i: int
+  if scanf(&quot;hay12&quot;, ch, i):
+    echo i
+```
+
+Regular iteration over `[&quot;a&quot;, &quot;hay$i&quot;]` would make `ch` just a `string`,
+but with `fields` iterator loop is unrolled, so `ch` is a `static[string]`,
+making it possible to use with `scanf()` which accepts compile-time
+constant as it's second argument.
+
+### Wrapping C #define macro
+
+C defines macros can be wrapped like any procedure.
+
+For example the coz profiler https://github.com/plasma-umass/coz/blob/381cbe5/include/coz.h#L83
+exposes the following define for end users:
+
+```C
+#define COZ_PROGRESS_NAMED(name) COZ_INCREMENT_COUNTER(COZ_COUNTER_TYPE_THROUGHPUT, name)
+```
+This can be wrapped with
+```Nim
+proc coz_progress_named*(name: cstring) {.importc: &quot;COZ_PROGRESS_NAMED&quot;, header:&quot;path/to/coz.h&quot;.}
+```
+&quot;&quot;&quot;</span>
+nbSave()
+</code></pre>
+</section><script>
+function toggleSourceDisplay() {
+  var btn = document.getElementById("show")
+  var source = document.getElementById("source");
+  if (btn.innerHTML=="Show Source") {
+    btn.innerHTML = "Hide Source";
+    source.style.display = "block";
+  } else {
+    btn.innerHTML = "Show Source";
+    source.style.display = "none";
+  }
+}
+</script></body>
+</html>

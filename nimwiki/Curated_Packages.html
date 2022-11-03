@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <title>nimwiki/Curated_Packages.nim</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>🐳</text></svg>">
+  <meta content="text/html; charset=utf-8" http-equiv="content-type">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <link rel='stylesheet' href='https://unpkg.com/normalize.css'>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/light.min.css">
+  <link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/pietroppeter/nimib/assets/atom-one-light.css'>
+  <style>
+.nb-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nb-small {
+  font-size: 0.8rem;
+}
+button.nb-small {
+  float: right;
+  padding: 2px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+section#source {
+  display:none
+}
+
+.nb-output {
+  line-height: 1.15;
+}
+</style>
+  
+</head>
+<body>
+<header>
+<div class="nb-box">
+  <span><a href="..">🏡</a></span>
+  <span><code>nimwiki/Curated_Packages.nim</code></span>
+  <span><a href="https://github.com/dlesnoff/nim-wiki"><svg aria-hidden="true" width="1.2em" height="1.2em" style="vertical-align: middle;" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59c.4.07.55-.17.55-.38c0-.19-.01-.82-.01-1.49c-2.01.37-2.53-.49-2.69-.94c-.09-.23-.48-.94-.82-1.13c-.28-.15-.68-.52-.01-.53c.63-.01 1.08.58 1.23.82c.72 1.21 1.87.87 2.33.66c.07-.52.28-.87.51-1.07c-1.78-.2-3.64-.89-3.64-3.95c0-.87.31-1.59.82-2.15c-.08-.2-.36-1.02.08-2.12c0 0 .67-.21 2.2.82c.64-.18 1.32-.27 2-.27c.68 0 1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82c.44 1.1.16 1.92.08 2.12c.51.56.82 1.27.82 2.15c0 3.07-1.87 3.75-3.65 3.95c.29.25.54.73.54 1.48c0 1.07-.01 1.93-.01 2.2c0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill="#000"></path></svg></a></span>
+</div>
+<hr>
+</header><main>
+<h1>Table of contents</h1>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center"></th>
+<th align="center"></th>
+<th align="center"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><a href="#standard-library">Standard library</a></td>
+<td align="center"><a href="#nim-distribution">Nim distribution</a></td>
+<td align="center"><a href="#metapackages">Metapackages</a></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center"><a href="#algorithms--data-structures">Algorithms &amp; data structures</a></td>
+<td align="center"><a href="#text">Text</a></td>
+<td align="center"><a href="#language">Language</a></td>
+<td align="center"><a href="#development">Development</a></td>
+</tr>
+<tr>
+<td align="center"><a href="#system">System</a></td>
+<td align="center"><a href="#database">Database</a></td>
+<td align="center"><a href="#multimedia">Multimedia</a></td>
+<td align="center"><a href="#web">Web</a></td>
+</tr>
+<tr>
+<td align="center"><a href="#internet">Internet</a></td>
+<td align="center"><a href="#specific-targets">Specific targets</a></td>
+<td align="center"><a href="#iot--embedded">IoT &amp; Embedded</a></td>
+<td align="center"><a href="#cloud">Cloud</a></td>
+</tr>
+<tr>
+<td align="center"><a href="#gui">GUI</a></td>
+<td align="center"><a href="#games">Games</a></td>
+<td align="center"><a href="#science">Science</a></td>
+<td align="center"><a href="#vertical-domains">Vertical Domains</a></td>
+</tr></tbody></table>
+<p>This list is fairly outdated. See instead: <a href="https://github.com/xflywind/awesome-nim">Awesome Nim</a> and the <a href="https://nimble.directory/">Nimble package directory</a></p>
+<h1>Curated list of Nim packages</h1>
+<p>A common problem with Nim is finding packages as the search feature in Nimble is limited and package authors don't always make their package descriptors easily searchable. Here is a classified list of packages. The taxonomy can be improved: you can use it to find packages in some categories, but also to find categories without packages. This list favours <em>pure</em> Nim packages. Bindings and wrappers for external libraries or services could be added to another page eventually. Another limitation is that it does not specify with which version of Nim these packages can be used. This list has been curated to include <em>quality</em> packages well written and with supporting documentation.</p>
+<h2>Standard library</h2>
+<ul>
+<li><a href="https://nim-lang.org/docs/lib.html">The standard library</a> already includes many optimized algorithms.</li>
+</ul>
+<h2>Nim distribution</h2>
+<ul>
+<li><a href="https://github.com/nim-lang/fusion">Fusion has modules that aren't part of the standard library but are bundled with Nim</a>.</li>
+</ul>
+<!--
+## Metapackages
+* [Fision](https://github.com/juancarlospaco/fision/blob/master/fision.nimble): A "metapackage" with all [important_packages](https://github.com/nim-lang/Nim/blob/devel/testament/important_packages.nim) with 0 dependencies and all unittests passing.
+  Automatically updated once a month by GitHub Actions to be neutral to opinions and keep always fresh.
+-->
+<h2>Algorithms &amp; data structures</h2>
+<ul>
+<li>Cryptography
+<ul>
+<li>nimcrypto: https://github.com/cheatfate/nimcrypto</li>
+<li>RollingHash: https://marcazar.github.io/RollingHash</li>
+<li>bslcurve: https://github.com/status-im/nim-blscurve</li>
+<li>fletcher: https://github.com/Akito13/nim-fletcher</li>
+<li>xxtea: https://github.com/xxtea/xxtea-nim</li>
+<li>des: https://github.com/LucaWolf/des.nim</li>
+<li>ed25519: https://github.com/niv/ed25519.nim</li>
+<li>murmurhash: https://github.com/cwpearson/nim-murmurhash</li>
+<li>NiMPC: https://github.com/markspanbroek/nimpc</li>
+<li>shimsham: https://github.com/apense/shimsham</li>
+<li>Constantine: https://github.com/mratsim/constantine</li>
+</ul>
+</li>
+<li>Random
+<ul>
+<li>drand: https://github.com/JeffersonLab/drand48</li>
+<li>random: https://github.com/oprypin/nim-random</li>
+<li>sysrandom: https://github.com/euantorano/sysrandom.nim</li>
+<li>gimei: https://github.com/mkanenobu/nim-gimei</li>
+<li>faker: https://github.com/jiro4989/faker</li>
+</ul>
+</li>
+<li>Maths
+<ul>
+<li>Numerical methods
+<ul>
+<li>numericalnim: https://github.com/HugoGranstrom/numericalnim/</li>
+</ul>
+</li>
+<li>Tensors, matrix
+<ul>
+<li>Arraymancer: https://github.com/mratsim/Arraymancer</li>
+<li>neo: https://github.com/andreaferretti/neo</li>
+<li>Flambeau: https://github.com/SciNim/flambeau</li>
+</ul>
+</li>
+<li>Statistics
+<ul>
+<li>alea: https://github.com/unicredit/alea</li>
+</ul>
+</li>
+<li>Sets
+<ul>
+<li>isl: https://github.com/mratsim/nim-isl</li>
+</ul>
+</li>
+<li>Miscellaneous
+<ul>
+<li>stint: https://github.com/status-im/nim-stint</li>
+<li>seqmath: https://github.com/jlp765/seqmath</li>
+<li>sequtils: http://htmlpreview.github.io/?https://github.com/Michedev/sequtils2/blob/master/sequtils2.html</li>
+<li>spills: https://github.com/andreaferretti/spills</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Compression
+<ul>
+<li>Zip
+<ul>
+<li>zip: https://github.com/nim-lang/zip</li>
+<li>zippy: https://github.com/guzba/zippy</li>
+</ul>
+</li>
+<li>Tar</li>
+</ul>
+</li>
+<li>Data structures
+<ul>
+<li>rbtree: https://github.com/Nycto/RBTreeNim</li>
+<li>BipBuffer: https://marcazar.github.io/BipBuffer</li>
+<li>BitVector: https://marcazar.github.io/BitVector</li>
+<li>bloom: https://www.github.com/boydgreenfield/nimrod-bloom</li>
+<li>binaryheap: https://github.com/bluenote10/nim-heap</li>
+<li>cdt: https://github.com/StefanSalewski/cdt</li>
+<li>faststack: https://github.com/Vladar4/FastStack</li>
+<li>minmaxheap: https://github.com/stefansalewski/minmaxheap</li>
+<li>quadtree: https://github.com/Nycto/QuadtreeNim</li>
+<li>k-d tree: https://github.com/jblindsay/kdtree</li>
+<li>RTree: https://github.com/StefanSalewski/RTree</li>
+<li>sorta: https://github.com/narimiran/sorta</li>
+<li>StashTable: https://github.com/olliNiinivaara/StashTable</li>
+</ul>
+</li>
+<li>Collections</li>
+<li>Sorts</li>
+<li>Regular expressions
+<ul>
+<li>npeg: https://github.com/zevv/npeg</li>
+<li>regex: https://github.com/nitely/nim-regex</li>
+</ul>
+</li>
+<li>Search and comparison
+<ul>
+<li>astar: https://github.com/Nycto/AStarNim</li>
+<li>lapper: https://github.com/brentp/nim-lapper</li>
+<li>negamax: https://github.com/JohnAD/negamax</li>
+<li>syphus: https://github.com/makingspace/syphus-nim</li>
+<li>ulid: https://github.com/adelq/ulid</li>
+</ul>
+</li>
+<li>Patterns
+<ul>
+<li>citadino: https://github.com/makingspace/cittadino</li>
+<li>nimobserver: https://github.com/Tangdongle/nimobserver</li>
+</ul>
+</li>
+<li>Graphics algorithms
+<ul>
+<li>delaunay: https://github.com/Nycto/DelaunayNim</li>
+<li>rect_packer: https://github.com/yglukhov/rect_packer</li>
+</ul>
+</li>
+<li>States machine and automata
+<ul>
+<li>Synthesis: https://github.com/mratsim/Synthesis</li>
+</ul>
+</li>
+</ul>
+<h2>Text</h2>
+<ul>
+<li>Text algorithms
+<ul>
+<li>cello: https://github.com/andreaferretti/cello</li>
+<li>porter: https://github.com/iourinski/porter</li>
+<li>strslice: https://github.com/PMunch/strslice</li>
+<li>alignment: https://github.com/jiro4989/alignment</li>
+</ul>
+</li>
+<li>Enhanced Unicode support
+<ul>
+<li>unicodedb: https://github.com/nitely/nim-unicodedb</li>
+<li>unicodeplus: https://github.com/nitely/nim-unicodeplus</li>
+<li>strunicode: https://github.com/nitely/nim-strunicode</li>
+</ul>
+</li>
+<li>Calendar, date, time
+<ul>
+<li>timezones: https://github.com/GULPF/timezones</li>
+<li>chrono: https://github.com/treeform/chrono</li>
+</ul>
+</li>
+<li>Internationalization</li>
+<li>Rich text
+<ul>
+<li>hastyscribe: https://h3rald.com/hastyscribe</li>
+<li>markdown: https://github.com/soasme/nim-markdown</li>
+</ul>
+</li>
+<li>Typography
+<ul>
+<li>typography: https://github.com/treeform/typography</li>
+</ul>
+</li>
+</ul>
+<h2>Language</h2>
+<ul>
+<li>C/C++ interop
+<ul>
+<li>c2nim: https://github.com/nim-lang/c2nim</li>
+<li>nimterop: https://github.com/nimterop/nimterop</li>
+<li>futhark: https://github.com/PMunch/futhark</li>
+</ul>
+</li>
+<li>Python interop
+<ul>
+<li>nimpy: https://github.com/yglukhov/nimpy</li>
+</ul>
+</li>
+<li>Java interop
+<ul>
+<li>jnim: https://github.com/yglukhov/jnim</li>
+</ul>
+</li>
+<li>Regular Expression
+<ul>
+<li>regex: https://github.com/nitely/nim-regex</li>
+</ul>
+</li>
+<li>Pattern matching
+<ul>
+<li>ast_pattern_match: https://github.com/krux02/ast-pattern-matching</li>
+<li>patty: https://github.com/andreaferretti/patty</li>
+<li>gara: https://github.com/alehander92/gara</li>
+</ul>
+</li>
+<li>With context
+<ul>
+<li>subfield: https://github.com/jyapayne/subfield</li>
+<li>tuples: https://github.com/MasonMcGill/tuples</li>
+<li>with: https://github.com/zevv/with</li>
+</ul>
+</li>
+<li>Contracts
+<ul>
+<li>contracts: https://github.com/Udiknedormin/NimContracts</li>
+<li>contra: https://github.com/juancarlospaco/nim-contra</li>
+</ul>
+</li>
+<li>Functional programming
+<ul>
+<li>nimfp: https://github.com/vegansk/nimfp</li>
+<li>zero-functional: https://github.com/zero-functional/zero-functional</li>
+<li>cascade: https://github.com/citycide/cascade</li>
+</ul>
+</li>
+<li>Formatter
+<ul>
+<li>strfmt: https://lyro.bitbucket.org/strfmt</li>
+</ul>
+</li>
+<li>Memory management</li>
+<li>Optimization
+<ul>
+<li>memo: https://github.com/andreaferretti/memo</li>
+</ul>
+</li>
+<li>Error handling
+<ul>
+<li>optionsutils: https://github.com/PMunch/nim-optionsutils</li>
+<li>ur: https://github.com/JohnAD/ur</li>
+</ul>
+</li>
+<li>Control structures
+<ul>
+<li>itertools: https://github.com/narimiran/itertools</li>
+<li>loopfusion: https://github.com/numforge/loopfusion</li>
+<li>looper: https://github.com/b3liever/looper</li>
+</ul>
+</li>
+<li>Metaprogramming
+<ul>
+<li>nesm: https://xomachine.gitlab.io/NESM/</li>
+</ul>
+</li>
+<li>Object orientation
+<ul>
+<li>classy: https://github.com/nigredo-tori/classy</li>
+<li>interfaced: https://github.com/andreaferretti/interfaced</li>
+<li>protocoled: https://github.com/b3liever/protocoled</li>
+<li>oop_utils: https://github.com/bluenote10/oop_utils</li>
+</ul>
+</li>
+<li>Toy languages
+<ul>
+<li>MiNiM: https://h3rald.com/minim</li>
+<li>spry: https://github.com/gokr/spry</li>
+<li>spryvm: https://github.com/gokr/spryvm</li>
+<li>ad: https://github.com/subsetpark/ad</li>
+<li>awk: https://github.com/greencardamom/awk</li>
+<li>brainfuck: https://github.com/def-/nim-brainfuck</li>
+<li>nim0: https://gitlab.com/pmetras/nim0</li>
+</ul>
+</li>
+<li>Compiler
+<ul>
+<li>nlvm: https://github.com/arnetheduck/nlvm</li>
+</ul>
+</li>
+<li>Miscellaneous
+<ul>
+<li>pykot: https://github.com/jabbalaci/nimpykot</li>
+<li>pylib: https://github.com/Yardanico/nimpylib</li>
+</ul>
+</li>
+</ul>
+<h2>Development</h2>
+<ul>
+<li>Editor, IDE, &amp; plugins
+<ul>
+<li>nimlsp: https://github.com/PMunch/nimlsp</li>
+<li>nim.nvim: https://github.com/alaviss/nim.nvim</li>
+<li>vscode-nim: https://github.com/saem/vscode-nim</li>
+</ul>
+</li>
+<li>REPL
+<ul>
+<li>inim: https://github.com/inim-repl/INim</li>
+</ul>
+</li>
+<li>Parser:
+<ul>
+<li>lilt: https://github.com/quelklef/lilt</li>
+<li>binaryparse: https://github.com/PMunch/binaryparse</li>
+<li>argparse: https://github.com/iffy/nim-argparse</li>
+<li>binarylang: https://github.com/sealmove/binarylang</li>
+</ul>
+</li>
+<li>Lex, Yacc:
+<ul>
+<li>nimly: https://github.com/loloiccl/nimly</li>
+</ul>
+</li>
+<li>AST tools</li>
+<li>Serializer
+<ul>
+<li>serialization: https://github.com/status-im/nim-serialization</li>
+<li>protobuf: https://github.com/PMunch/protobuf-nim</li>
+<li>yaml: http://flyx.github.io/NimYAML/</li>
+<li>samson: https://github.com/GULPF/samson</li>
+<li>unpack: https://github.com/technicallyagd/unpack</li>
+<li>cbor: https://github.com/ehmry/nim-cbor</li>
+<li>nimpb: https://github.com/oswjk/nimpb</li>
+<li>packedjson: https://github.com/Araq/packedjson</li>
+<li>tnetstring: https://github.com/mahlonsmith/nim-tnetstring</li>
+<li>nimjson: https://github.com/jiro4989/nimjson</li>
+<li>msgpack4nim: https://github.com/jangko/msgpack4nim</li>
+</ul>
+</li>
+<li>Command line
+<ul>
+<li>Arguments parser
+<ul>
+<li>docopt: https://github.com/docopt/docopt.nim</li>
+<li>cligen: https://github.com/c-blake/cligen</li>
+</ul>
+</li>
+<li>Line-oriented command interpreter
+<ul>
+<li>Loki: https://github.com/beshrkayali/loki</li>
+</ul>
+</li>
+<li>Text entry</li>
+</ul>
+</li>
+<li>Config parser
+<ul>
+<li>confutils: https://github.com/status-im/nim-confutils</li>
+<li>dotenv: https://github.com/euantorano/dotenv.nim</li>
+<li>parseini: https://github.com/lihf8515/parseini</li>
+<li>parsetoml: https://github.com/NimParsers/parsetoml</li>
+<li>envconfig: https://github.com/jiro4989/envconfig</li>
+</ul>
+</li>
+<li>Useful Macros</li>
+<li>Documentation
+<ul>
+<li>ntangle: https://github.com/OrgTangle/ntangle</li>
+</ul>
+</li>
+<li>Tests
+<ul>
+<li>einheit: https://github.com/jyapayne/einheit</li>
+</ul>
+</li>
+<li>Installer</li>
+<li>Resource bundler</li>
+<li>Build system
+<ul>
+<li>nake: https://github.com/fowlmouth/nake</li>
+</ul>
+</li>
+<li>Package management
+<ul>
+<li>nifty: https://github.com/h3rald/nifty</li>
+<li>plz: https://github.com/juancarlospaco/nim-pypi</li>
+</ul>
+</li>
+<li>Continuous integration</li>
+<li>DSL</li>
+<li>Version control
+<ul>
+<li>p4ztag_to_json: https://github.com/kaushalmodi/p4ztag_to_json</li>
+<li>semver: https://github.com/euantorano/semver.nim</li>
+<li>spdx_licenses: https://github.com/euantorano/spdx_licenses.nim</li>
+<li><a href="https://github.com/juancarlospaco/parselicense#parselicense">parseLicense</a> Parse SPDX Licenses from string to Enum at compile-time</li>
+</ul>
+</li>
+<li>Input validation
+<ul>
+<li>validateip: https://github.com/Akito13/nim-validateip</li>
+</ul>
+</li>
+<li>Code analysis
+<ul>
+<li>coco: https://github.com/samuelroy/coco</li>
+</ul>
+</li>
+<li>Scripting
+<ul>
+<li>nimr: https://github.com/Jeff-Ciesielski/nimr</li>
+<li>nimcr: https://github.com/PMunch/nimcr</li>
+</ul>
+</li>
+<li>Benchmarking
+<ul>
+<li>criterion: https://github.com/disruptek/criterion</li>
+<li>nimbench: https://github.com/ivankoster/nimbench</li>
+<li>stopwatch: https://gitlab.com/define-private-public/stopwatch</li>
+<li>timeit: https://github.com/xflywind/timeit</li>
+<li>timespec_get: https://github.com/Matceporial/nim-timespec_get</li>
+<li>golden: https://github.com/disruptek/golden</li>
+</ul>
+</li>
+<li>External libraries integration
+<ul>
+<li>nimgen: https://github.com/genotrance/nimgen</li>
+</ul>
+</li>
+</ul>
+<h2>System</h2>
+<ul>
+<li>Platform
+<ul>
+<li>psutil: https://github.com/johnscillieri/psutil-nim</li>
+</ul>
+</li>
+<li>Logs &amp; syslog
+<ul>
+<li>chronicles: https://github.com/status-im/nim-chronicles</li>
+</ul>
+</li>
+<li>Concurrent
+<ul>
+<li>chronos: https://github.com/status-im/nim-chronos</li>
+</ul>
+<ul>
+<li>Threading
+<ul>
+<li>weave: https://github.com/mratsim/weave</li>
+<li>shared: https://github.com/genotrance/shared</li>
+<li>timerpool: https://github.com/mikra01/timerpool</li>
+</ul>
+</li>
+<li>Process</li>
+<li>Multiplexing</li>
+<li>Routines</li>
+<li>Scheduler
+<ul>
+<li>nim-schedules: https://github.com/soasme/nim-schedules</li>
+</ul>
+</li>
+<li>Message passing</li>
+</ul>
+</li>
+<li>Publisher/Consumer
+<ul>
+<li>cittadino: https://github.com/makingspace/cittadino</li>
+</ul>
+</li>
+<li>Message Queues, pipes
+<ul>
+<li>beanstalk: https://github.com/tormaroe/beanstalkd.nim</li>
+</ul>
+</li>
+<li>Globbing
+<ul>
+<li>glob: https://github.com/citycide/glob</li>
+</ul>
+</li>
+<li>IO
+<ul>
+<li>serial: https://github.com/euantorano/serial.nim</li>
+<li>nimbluez: https://github.com/Electric-Blue/NimBluez</li>
+</ul>
+<ul>
+<li>Async
+<ul>
+<li>asyncpythonfile: https://github.com/fallingduck/asyncpythonfile-nim</li>
+</ul>
+</li>
+<li>Sync</li>
+</ul>
+</li>
+<li>Networking
+<ul>
+<li>stomp: https://github.com/mahlonsmith/nim-stomp</li>
+</ul>
+</li>
+<li>Debugging</li>
+<li>Profiler, benchmarks</li>
+<li>Users, groups and passwords management</li>
+<li>RPC</li>
+<li>Containers
+<ul>
+<li>asyncdocker: http://tulayang.github.io/asyncdocker.html</li>
+</ul>
+</li>
+<li>Miscellaneous
+<ul>
+<li>stew: https://github.com/status-im/nim-stew</li>
+<li>tempdir: https://github.com/euantorano/tempdir.nim</li>
+</ul>
+</li>
+</ul>
+<h2>Database</h2>
+<ul>
+<li>JSON parser, generator</li>
+<li>CSV parser
+<ul>
+<li>csvtools: https://github.com/unicredit/csvtools</li>
+</ul>
+</li>
+<li>SQL parser</li>
+<li>Drivers
+<ul>
+<li>SQLite
+<ul>
+<li>SQLiteral: https://github.com/olliNiinivaara/SQLiteral</li>
+</ul>
+</li>
+<li>MySQL
+<ul>
+<li>asyncmysql: https://github.com/tulayang/asyncmysql</li>
+</ul>
+</li>
+<li>PostgreSQL</li>
+<li>Others
+<ul>
+<li>db_clickhouse: https://github.com/leonardoce/nim-clickhouse</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>XML parser, generator
+<ul>
+<li>xmltools: https://github.com/vegansk/xmltools</li>
+<li>xml.nim: https://github.com/ba0f3/xml.nim</li>
+</ul>
+</li>
+<li>ORM
+<ul>
+<li>norm: https://github.com/moigagoo/norm</li>
+<li>allographer: https://github.com/itsumura-h/nim-allographer</li>
+<li><a href="https://github.com/juancarlospaco/nim-gatabase#gatabase">Gatabase</a></li>
+</ul>
+</li>
+<li>NoSQL
+<ul>
+<li>litestore: https://h3rald.com/litestore</li>
+<li>nimongo: https://github.com/SSPkrolik/nimongo</li>
+<li>redis: https://github.com/nim-lang/redis</li>
+</ul>
+</li>
+<li>Search
+<ul>
+<li>sonic: https://github.com/xmonader/nim-sonic-client</li>
+</ul>
+</li>
+</ul>
+<h2>Multimedia</h2>
+<ul>
+<li>Magic file detection
+<ul>
+<li>imghdr: https://github.com/achesak/nim-imghdr/blob/master/imghdr.nim</li>
+</ul>
+</li>
+<li>Audio and music
+<ul>
+<li>Files/stream formats</li>
+<li>Midi</li>
+<li>WAV:
+<ul>
+<li>wave: https://github.com/jiro4989/wave</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Image
+<ul>
+<li>Colors:
+<ul>
+<li>chroma: https://github.com/treeform/chroma</li>
+</ul>
+</li>
+<li>Formats: BMP, GIF, JPEG, PNG, SVG
+<ul>
+<li>nimBMP: https://github.com/jangko/nimBMP</li>
+<li>nimSvg: https://github.com/bluenote10/NimSvg</li>
+<li>nimPNG: https://github.com/jangko/nimPNG</li>
+<li>pnm: https://github.com/jiro4989/pnm</li>
+<li><a href="https://github.com/juancarlospaco/xpm#x-pixmap--netpbm">X-Pixmap, NetPBM (PGM, PBM)</a></li>
+</ul>
+</li>
+<li>Filters and effects
+<ul>
+<li>imageman: https://github.com/SolitudeSF/imageman</li>
+<li>perlin: https://github.com/Nycto/PerlinNim</li>
+<li>blurhash: https://github.com/SolitudeSF/blurhash</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Video
+<ul>
+<li>srt: https://github.com/achesak/nim-srt</li>
+<li>subviewer: https://github.com/achesak/nim-subviewer</li>
+<li>VapourSynth.nim: https://github.com/mantielero/VapourSynth.nim</li>
+</ul>
+</li>
+<li>Raytracing
+<ul>
+<li>trace of radiance: https://github.com/mratsim/trace-of-radiance</li>
+</ul>
+</li>
+<li>3D, VR
+<ul>
+<li>@see: Algorithms &gt; Graphics algorithms</li>
+</ul>
+</li>
+<li>EBook
+<ul>
+<li>biblioteca_guarrilla: https://github.com/juancarlospaco/biblioteca-guarrilla</li>
+</ul>
+</li>
+</ul>
+<h2>Web</h2>
+<ul>
+<li>Single page applications
+<ul>
+<li>react: https://github.com/andreaferretti/react.nim</li>
+<li>karax: https://github.com/karaxnim/karax</li>
+</ul>
+</li>
+<li>HTML and CSS helpers
+<ul>
+<li>random_font_color: https://github.com/juancarlospaco/nim-random-font-color</li>
+</ul>
+<ul>
+<li>Parsing
+<ul>
+<li>nimquery: https://github.com/GULPF/nimquery</li>
+<li><a href="https://github.com/OpenSystemsLab/q.nim">Q</a></li>
+</ul>
+</li>
+<li>Generator
+<ul>
+<li>Gen: https://github.com/Adeohluwa/gen</li>
+</ul>
+</li>
+<li>Generating
+<ul>
+<li>rosencrantz: https://github.com/andreaferretti/rosencrantz</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>HTTP tools: Request, Response, Encodings, Authentication, Status, Cookies
+<ul>
+<li>httpauth: https://github.com/FedericoCeratto/nim-httpauth</li>
+<li>biscuits: https://github.com/achesak/nim-biscuits</li>
+</ul>
+<ul>
+<li>Websockets
+<ul>
+<li>websocket: https://github.com/niv/websocket.nim</li>
+<li>ws: https://github.com/treeform/ws</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Templating
+<ul>
+<li>emerald: https://flyx.github.io/emerald/</li>
+<li>moustachu: https://github.com/fenekku/moustachu</li>
+<li>mustache: https://github.com/soasme/nim-mustache</li>
+<li>templates: https://github.com/onionhammer/nim-templates</li>
+</ul>
+</li>
+<li>CGI?</li>
+<li>Frameworks
+<ul>
+<li>jester: https://github.com/dom96/jester</li>
+<li>prologue: https://github.com/planety/prologue</li>
+<li>Nexus: https://github.com/jfilby/nexus</li>
+<li><a href="https://nimwc.org/login">NimWC</a> https://github.com/ThomasTJdev/nim_websitecreator</li>
+<li>Basolato: https://github.com/itsumura-h/nim-basolato</li>
+<li>Starlight: https://github.com/planety/starlight</li>
+<li>Akane: https://github.com/Ethosa/akane</li>
+</ul>
+</li>
+</ul>
+<h2>Internet</h2>
+<ul>
+<li>URI, URL
+<ul>
+<li>Urlly: https://github.com/treeform/urlly</li>
+</ul>
+</li>
+<li>MIME</li>
+<li>Email</li>
+<li>SMTP
+<ul>
+<li>easymail: https://github.com/coocheenin/easymail</li>
+</ul>
+</li>
+<li>IMAP</li>
+<li>IRC</li>
+<li>SSL</li>
+<li>Telnet</li>
+<li>Authentication, OAuth</li>
+<li>Bot building
+<ul>
+<li>telebot: https://github.com/ba0f3/telebot.nim</li>
+</ul>
+</li>
+<li>Web services</li>
+<li>Webdav
+<ul>
+<li>webdavclient: https://github.com/beshrkayali/webdavclient</li>
+</ul>
+</li>
+</ul>
+<h2>Specific targets</h2>
+<ul>
+<li>JavaScript
+<ul>
+<li>Websockets</li>
+</ul>
+</li>
+</ul>
+<h2>IoT &amp; Embedded</h2>
+<ul>
+<li>Hardware
+<ul>
+<li>boneIO: https://github.com/xyz32/boneIO</li>
+</ul>
+</li>
+<li>Microcontrollers
+<ul>
+<li>MSP430f5510 (6kB): https://gitlab.com/jalexander8717/msp430f5510-nim</li>
+<li>STM32F3 (16 kB): https://github.com/mwbrown/nim_stm32f3</li>
+<li>Arduino + Mediatek LinkIt ONE SDK: https://github.com/gokr/ardunimo</li>
+<li>Arduino ESP8266 + Flashing Nim into Arduino: https://gitlab.com/NetaLabTek/Arduimesp</li>
+</ul>
+</li>
+</ul>
+<h2>Cloud</h2>
+<ul>
+<li>Distributed systems</li>
+<li>Map, reduce</li>
+<li>Streams
+<ul>
+<li>mangle: https://github.com/baabelfish/mangle</li>
+</ul>
+</li>
+<li>HyperLogLog and family</li>
+</ul>
+<h2>GUI</h2>
+<ul>
+<li>Cross-platform
+<ul>
+<li>nimx: https://github.com/yglukhov/nimx</li>
+<li>nigui: https://github.com/trustable-code/NiGui</li>
+<li>libui: https://github.com/nim-lang/ui</li>
+<li>imgui: https://github.com/nimgl/imgui</li>
+</ul>
+</li>
+<li>MacOS</li>
+<li>Windows
+<ul>
+<li>wnim: https://github.com/khchen/wNim</li>
+<li>winim: https://github.com/khchen/winim</li>
+</ul>
+</li>
+<li>GTK
+<ul>
+<li>gintro (GTK): https://github.com/StefanSalewski/gintro</li>
+</ul>
+</li>
+<li>QT
+<ul>
+<li>nimqml: https://github.com/filcuc/nimqml</li>
+</ul>
+</li>
+<li>Web
+<ul>
+<li>fidget: https://github.com/treeform/fidget</li>
+<li>webgui: https://github.com/juancarlospaco/webgui</li>
+</ul>
+</li>
+<li>Console/Terminal
+<ul>
+<li>progress: https://github.com/euantorano/progress.nim</li>
+<li>NimCx: https://github.com/qqtop/NimCx</li>
+<li>dashing: https://github.com/FedericoCeratto/nim-dashing</li>
+<li>illwill: https://github.com/johnnovak/illwill</li>
+</ul>
+<ul>
+<li>Curses</li>
+</ul>
+</li>
+<li>Forms</li>
+<li>Reports
+<ul>
+<li>foliant: https://github.com/foliant-docs/foliant-nim</li>
+<li>nimtomd: https://github.com/ThomasTJdev/nimtomd</li>
+<li>pager: https://git.sr.ht/~reesmichael1/nim-pager</li>
+</ul>
+</li>
+<li>Tabular
+<ul>
+<li>terminaltables: https://github.com/xmonader/nim-terminaltables</li>
+</ul>
+</li>
+<li>Plots
+<ul>
+<li>nimgraphviz: https://github.com/QuinnFreedman/nimgraphviz</li>
+<li>ggplotnim: https://github.com/Vindaar/ggplotnim</li>
+<li>nim-plotly: https://github.com/brentp/nim-plotly</li>
+<li>matplotnim: https://github.com/ruivieira/matplotnim</li>
+<li>gnuplotnim: https://github.com/dvolk/gnuplot.nim</li>
+<li>graph: https://github.com/stisa/graph</li>
+<li>nimetry: https://github.com/benjif/nimetry</li>
+<li>gr.nim: https://github.com/mantielero/gr.nim</li>
+</ul>
+</li>
+<li>Formats: PDF, Tex, RST, ePub...
+<ul>
+<li>nimPDF: https://github.com/jangko/nimpdf</li>
+</ul>
+</li>
+<li>Editor
+<ul>
+<li>NEd: https://github.com/StefanSalewski/NEd</li>
+</ul>
+</li>
+</ul>
+<h2>Games</h2>
+<ul>
+<li>Games
+<ul>
+<li>nim-chess4: https://github.com/StefanSalewski/nim-chess4</li>
+<li>tetris: https://github.com/Joco223/Tetris-In-Nim</li>
+</ul>
+</li>
+<li>Engines
+<ul>
+<li>nimgame2: https://github.com/Vladar4/nimgame2</li>
+<li>nimgl: https://github.com/lmariscal/nimgl</li>
+<li>rapid: https://github.com/liquid600pgm/rapid</li>
+<li>tinamou: https://github.com/Double-oxygeN/tinamou</li>
+<li>rod: https://github.com/yglukhov/rod</li>
+</ul>
+</li>
+<li>Frameworks
+<ul>
+<li>nico: https://github.com/ftsf/nico</li>
+<li>c4: https://github.com/c0ntribut0r/cat-400</li>
+<li>turn_based_game: https://github.com/JohnAD/turn_based_game</li>
+</ul>
+</li>
+<li>Emulation
+<ul>
+<li>nimes: https://github.com/def-/nimes</li>
+</ul>
+</li>
+<li>Miscellaneous
+<ul>
+<li>nasher: https://github.com/squattingmonk/nasher.nim</li>
+<li>neverwinter: https://github.com/niv/neverwinter.nim</li>
+</ul>
+</li>
+</ul>
+<h2>Science</h2>
+<ul>
+<li>Science
+<ul>
+<li>@see: Algorithms &gt; Graphics algorithms</li>
+<li>units: https://github.com/Udiknedormin/NimUnits</li>
+<li>metric: https://github.com/mjendrusch/metric</li>
+</ul>
+</li>
+<li>Astronomy
+<ul>
+<li>orbits: https://github.com/treeform/orbits</li>
+</ul>
+</li>
+<li>Mathematics
+<ul>
+<li>@see Algorithms &amp; data structures &gt; Maths</li>
+<li>ski: https://github.com/jiro4989/ski</li>
+<li>chebyshev: https://github.com/jxy/chebyshev</li>
+<li>mathexpr: https://github.com/Yardanico/nim-mathexpr</li>
+<li><a href="https://github.com/juancarlospaco/nim-constants#constants">Constants</a> Mathematical named static constants useful for different disciplines</li>
+<li>linear algebra: https://github.com/planetis-m/manu</li>
+</ul>
+</li>
+<li>Biology
+<ul>
+<li>falas: https://brentp.github.io/falas/falas.html</li>
+<li>nimna: https://github.com/mjendrusch/nimna</li>
+<li>polypbren: https://github.com/guibar64/polypbren</li>
+</ul>
+<ul>
+<li>Genomic
+<ul>
+<li>nim-hts: https://github.com/brentp/hts-nim</li>
+<li>nim-hts-tools: https://github.com/brentp/hts-nim-tools</li>
+<li>slivar: https://github.com/brentp/slivar</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Data science
+<ul>
+<li>@see GUI &gt; Reports &gt; Plots</li>
+<li>arraymancer: https://mratsim.github.io/Arraymancer/</li>
+<li>NimData: https://github.com/bluenote10/NimData</li>
+<li>nimdataframe: https://github.com/qqtop/nimdataframe</li>
+<li>Datamancer: https://github.com/SciNim/Datamancer</li>
+<li>laser: https://github.com/numforge/laser</li>
+<li>nimhdf5: https://github.com/Vindaar/nimhdf5</li>
+<li>pipelines: https://github.com/calebwin/pipelines</li>
+<li>mentat: https://github.com/ruivieira/nim-mentat</li>
+<li>mpfit: https://github.com/Vindaar/nim-mpfit</li>
+<li>teafiles: https://github.com/unicredit/nim-teafiles</li>
+</ul>
+</li>
+<li>Machine Learning
+<ul>
+<li>arraymancer_vision: https://github.com/edubart/arraymancer-vision</li>
+<li>nlopt: https://github.com/Vindaar/nimnlopt</li>
+<li>torch: https://github.com/fragcolor-xyz/nimtorch</li>
+<li>flambeau: https://github.com/SciNim/flambeau</li>
+<li>nimfastText: https://github.com/genotrance/nimfastText</li>
+<li>lda: https://github.com/unicredit/lda</li>
+<li>libsvm: https://github.com/genotrance/libsvm</li>
+<li>opencv: https://github.com/dom96/nim-opencv</li>
+</ul>
+</li>
+</ul>
+<h2>Vertical domains</h2>
+<ul>
+<li>Blockchain
+<ul>
+<li>eth: https://github.com/status-im/nim-eth</li>
+<li>nimbus: https://github.com/status-im/nimbus</li>
+</ul>
+</li>
+<li>Geo / GIS
+<ul>
+<li><a href="https://github.com/juancarlospaco/nim-openstreetmap#nim-openstreetmap">OpenStreetMap</a></li>
+<li><a href="https://github.com/juancarlospaco/nim-nominatim#nim-nominatim">OpenStreetMap Nominatim</a></li>
+<li><a href="https://github.com/juancarlospaco/nim-overpass#nim-overpass">OpenStreetMap Overpass</a></li>
+<li><a href="https://github.com/juancarlospaco/nim-osrm#nim-osrm">Open Source Routing Machine for OpenStreetMap</a></li>
+<li><a href="https://github.com/juancarlospaco/nim-openweathermap#nim-openweathermap">OpenWeatherMap</a></li>
+<li><a href="https://github.com/juancarlospaco/nim-open-elevation#nim-open-elevation">OpenElevation</a></li>
+<li><a href="https://github.com/juancarlospaco/nim-georefar#nim-georefar">GeoRef Argentina</a></li>
+<li><a href="https://github.com/juancarlospaco/nim-usigar#nim-usigar">USIG Argentina</a></li>
+<li><a href="https://github.com/juancarlospaco/nim-openstreetcam#nim-openstreetcam">OpenStreetCams</a> (WIP)</li>
+</ul>
+</li>
+<li>Office applications</li>
+<li>Natural language processing</li>
+<li>Security</li>
+<li>Platform specific
+<ul>
+<li>Linux &amp; *nix</li>
+<li>Windows</li>
+<li>OS X</li>
+</ul>
+</li>
+<li>Tools</li>
+<li>Servers</li>
+<li>Intelligent Home
+<ul>
+<li>nimha: https://github.com/ThomasTJdev/nim_homeassistant</li>
+</ul>
+</li>
+</ul>
+<p><a href="#table-of-contents" title="Go to top"> :arrow_up: :arrow_up: :arrow_up: :arrow_up</a></p>
+</main>
+<footer>
+<hr>
+<div class="nb-box">
+  <span><span class="nb-small">made with <a href="https://pietroppeter.github.io/nimib/">nimib 🐳</a></span></span>
+  <span></span>
+  <span><button class="nb-small" id="show" onclick="toggleSourceDisplay()">Show Source</button></span>
+</div>
+</footer>
+<section id="source">
+<pre><code class="nim hljs"><span class="hljs-keyword">import</span> strformat, strutils
+<span class="hljs-keyword">import</span> nimib
+<span class="hljs-keyword">import</span> nimoji
+
+nbInit
+
+nbText:<span class="hljs-string">&quot;&quot;&quot;
+# Table of contents
+
+|                |                |                |                |
+| :------------: | :------------: | :------------: | :------------: |
+| [Standard library](#standard-library) | [Nim distribution](#nim-distribution) | [Metapackages](#metapackages) |
+| [Algorithms &amp; data structures](#algorithms--data-structures) | [Text](#text) | [Language](#language) | [Development](#development) |
+| [System](#system) | [Database](#database) | [Multimedia](#multimedia) | [Web](#web) |
+| [Internet](#internet) | [Specific targets](#specific-targets) | [IoT &amp; Embedded](#iot--embedded) | [Cloud](#cloud) |
+| [GUI](#gui) | [Games](#games) | [Science](#science) | [Vertical Domains](#vertical-domains) |
+
+This list is fairly outdated. See instead: [Awesome Nim](https://github.com/xflywind/awesome-nim) and the [Nimble package directory](https://nimble.directory/) 
+
+# Curated list of Nim packages
+
+A common problem with Nim is finding packages as the search feature in Nimble is limited and package authors don't always make their package descriptors easily searchable. Here is a classified list of packages. The taxonomy can be improved: you can use it to find packages in some categories, but also to find categories without packages. This list favours *pure* Nim packages. Bindings and wrappers for external libraries or services could be added to another page eventually. Another limitation is that it does not specify with which version of Nim these packages can be used. This list has been curated to include *quality* packages well written and with supporting documentation.
+
+## Standard library
+  * [The standard library](https://nim-lang.org/docs/lib.html) already includes many optimized algorithms.
+
+## Nim distribution
+  * [Fusion has modules that aren't part of the standard library but are bundled with Nim](https://github.com/nim-lang/fusion).
+
+&lt;!--
+## Metapackages
+* [Fision](https://github.com/juancarlospaco/fision/blob/master/fision.nimble): A &quot;metapackage&quot; with all [important_packages](https://github.com/nim-lang/Nim/blob/devel/testament/important_packages.nim) with 0 dependencies and all unittests passing.
+  Automatically updated once a month by GitHub Actions to be neutral to opinions and keep always fresh.
+--&gt;
+
+## Algorithms &amp; data structures
+  * Cryptography
+    - nimcrypto: https://github.com/cheatfate/nimcrypto
+    - RollingHash: https://marcazar.github.io/RollingHash
+    - bslcurve: https://github.com/status-im/nim-blscurve
+    - fletcher: https://github.com/Akito13/nim-fletcher
+    - xxtea: https://github.com/xxtea/xxtea-nim
+    - des: https://github.com/LucaWolf/des.nim
+    - ed25519: https://github.com/niv/ed25519.nim
+    - murmurhash: https://github.com/cwpearson/nim-murmurhash
+    - NiMPC: https://github.com/markspanbroek/nimpc
+    - shimsham: https://github.com/apense/shimsham
+    - Constantine: https://github.com/mratsim/constantine
+  * Random
+    - drand: https://github.com/JeffersonLab/drand48
+    - random: https://github.com/oprypin/nim-random
+    - sysrandom: https://github.com/euantorano/sysrandom.nim
+    - gimei: https://github.com/mkanenobu/nim-gimei
+    - faker: https://github.com/jiro4989/faker
+  * Maths
+    * Numerical methods
+      - numericalnim: https://github.com/HugoGranstrom/numericalnim/
+    * Tensors, matrix
+      - Arraymancer: https://github.com/mratsim/Arraymancer
+      - neo: https://github.com/andreaferretti/neo
+      - Flambeau: https://github.com/SciNim/flambeau
+    * Statistics
+      - alea: https://github.com/unicredit/alea
+    * Sets
+      - isl: https://github.com/mratsim/nim-isl
+    * Miscellaneous
+      - stint: https://github.com/status-im/nim-stint
+      - seqmath: https://github.com/jlp765/seqmath
+      - sequtils: http://htmlpreview.github.io/?https://github.com/Michedev/sequtils2/blob/master/sequtils2.html
+      - spills: https://github.com/andreaferretti/spills
+  * Compression
+    * Zip
+      - zip: https://github.com/nim-lang/zip
+      - zippy: https://github.com/guzba/zippy
+    * Tar
+  * Data structures
+    - rbtree: https://github.com/Nycto/RBTreeNim
+    - BipBuffer: https://marcazar.github.io/BipBuffer
+    - BitVector: https://marcazar.github.io/BitVector
+    - bloom: https://www.github.com/boydgreenfield/nimrod-bloom
+    - binaryheap: https://github.com/bluenote10/nim-heap
+    - cdt: https://github.com/StefanSalewski/cdt
+    - faststack: https://github.com/Vladar4/FastStack
+    - minmaxheap: https://github.com/stefansalewski/minmaxheap
+    - quadtree: https://github.com/Nycto/QuadtreeNim
+    - k-d tree: https://github.com/jblindsay/kdtree
+    - RTree: https://github.com/StefanSalewski/RTree
+    - sorta: https://github.com/narimiran/sorta
+    - StashTable: https://github.com/olliNiinivaara/StashTable
+  * Collections
+  * Sorts
+  * Regular expressions
+    - npeg: https://github.com/zevv/npeg
+    - regex: https://github.com/nitely/nim-regex
+  * Search and comparison
+    - astar: https://github.com/Nycto/AStarNim
+    - lapper: https://github.com/brentp/nim-lapper
+    - negamax: https://github.com/JohnAD/negamax
+    - syphus: https://github.com/makingspace/syphus-nim
+    - ulid: https://github.com/adelq/ulid
+  * Patterns
+    - citadino: https://github.com/makingspace/cittadino
+    - nimobserver: https://github.com/Tangdongle/nimobserver
+  * Graphics algorithms
+    - delaunay: https://github.com/Nycto/DelaunayNim
+    - rect_packer: https://github.com/yglukhov/rect_packer
+  * States machine and automata
+    - Synthesis: https://github.com/mratsim/Synthesis
+
+
+## Text
+  * Text algorithms
+    - cello: https://github.com/andreaferretti/cello
+    - porter: https://github.com/iourinski/porter
+    - strslice: https://github.com/PMunch/strslice
+    - alignment: https://github.com/jiro4989/alignment
+  * Enhanced Unicode support
+    - unicodedb: https://github.com/nitely/nim-unicodedb
+    - unicodeplus: https://github.com/nitely/nim-unicodeplus
+    - strunicode: https://github.com/nitely/nim-strunicode
+  * Calendar, date, time
+    - timezones: https://github.com/GULPF/timezones
+    - chrono: https://github.com/treeform/chrono
+  * Internationalization
+  * Rich text
+    - hastyscribe: https://h3rald.com/hastyscribe
+    - markdown: https://github.com/soasme/nim-markdown
+  * Typography
+    - typography: https://github.com/treeform/typography
+
+
+## Language
+  * C/C++ interop
+    - c2nim: https://github.com/nim-lang/c2nim
+    - nimterop: https://github.com/nimterop/nimterop
+    - futhark: https://github.com/PMunch/futhark
+  * Python interop
+    - nimpy: https://github.com/yglukhov/nimpy
+  * Java interop
+    - jnim: https://github.com/yglukhov/jnim
+  * Regular Expression
+    - regex: https://github.com/nitely/nim-regex
+  * Pattern matching
+    - ast_pattern_match: https://github.com/krux02/ast-pattern-matching
+    - patty: https://github.com/andreaferretti/patty
+    - gara: https://github.com/alehander92/gara
+  * With context
+    - subfield: https://github.com/jyapayne/subfield
+    - tuples: https://github.com/MasonMcGill/tuples
+    - with: https://github.com/zevv/with
+  * Contracts
+    - contracts: https://github.com/Udiknedormin/NimContracts
+    - contra: https://github.com/juancarlospaco/nim-contra
+  * Functional programming
+    - nimfp: https://github.com/vegansk/nimfp
+    - zero-functional: https://github.com/zero-functional/zero-functional
+    - cascade: https://github.com/citycide/cascade
+  * Formatter
+    - strfmt: https://lyro.bitbucket.org/strfmt
+  * Memory management
+  * Optimization
+    - memo: https://github.com/andreaferretti/memo
+  * Error handling
+    - optionsutils: https://github.com/PMunch/nim-optionsutils
+    - ur: https://github.com/JohnAD/ur
+  * Control structures
+    - itertools: https://github.com/narimiran/itertools
+    - loopfusion: https://github.com/numforge/loopfusion
+    - looper: https://github.com/b3liever/looper
+  * Metaprogramming
+    - nesm: https://xomachine.gitlab.io/NESM/
+  * Object orientation
+    - classy: https://github.com/nigredo-tori/classy
+    - interfaced: https://github.com/andreaferretti/interfaced
+    - protocoled: https://github.com/b3liever/protocoled
+    - oop_utils: https://github.com/bluenote10/oop_utils
+  * Toy languages
+    - MiNiM: https://h3rald.com/minim
+    - spry: https://github.com/gokr/spry
+    - spryvm: https://github.com/gokr/spryvm
+    - ad: https://github.com/subsetpark/ad
+    - awk: https://github.com/greencardamom/awk
+    - brainfuck: https://github.com/def-/nim-brainfuck
+    - nim0: https://gitlab.com/pmetras/nim0
+  * Compiler
+    - nlvm: https://github.com/arnetheduck/nlvm
+  * Miscellaneous
+    - pykot: https://github.com/jabbalaci/nimpykot
+    - pylib: https://github.com/Yardanico/nimpylib
+  
+
+## Development
+  * Editor, IDE, &amp; plugins
+    - nimlsp: https://github.com/PMunch/nimlsp
+    - nim.nvim: https://github.com/alaviss/nim.nvim
+    - vscode-nim: https://github.com/saem/vscode-nim
+  * REPL
+    - inim: https://github.com/inim-repl/INim
+  * Parser:
+    - lilt: https://github.com/quelklef/lilt
+    - binaryparse: https://github.com/PMunch/binaryparse
+    - argparse: https://github.com/iffy/nim-argparse
+    - binarylang: https://github.com/sealmove/binarylang
+  * Lex, Yacc:
+    - nimly: https://github.com/loloiccl/nimly
+  * AST tools
+  * Serializer
+    - serialization: https://github.com/status-im/nim-serialization
+    - protobuf: https://github.com/PMunch/protobuf-nim
+    - yaml: http://flyx.github.io/NimYAML/
+    - samson: https://github.com/GULPF/samson
+    - unpack: https://github.com/technicallyagd/unpack
+    - cbor: https://github.com/ehmry/nim-cbor
+    - nimpb: https://github.com/oswjk/nimpb
+    - packedjson: https://github.com/Araq/packedjson
+    - tnetstring: https://github.com/mahlonsmith/nim-tnetstring
+    - nimjson: https://github.com/jiro4989/nimjson
+    - msgpack4nim: https://github.com/jangko/msgpack4nim
+  * Command line
+    * Arguments parser
+      - docopt: https://github.com/docopt/docopt.nim
+      - cligen: https://github.com/c-blake/cligen
+    * Line-oriented command interpreter
+      - Loki: https://github.com/beshrkayali/loki
+    * Text entry
+  * Config parser
+    - confutils: https://github.com/status-im/nim-confutils
+    - dotenv: https://github.com/euantorano/dotenv.nim
+    - parseini: https://github.com/lihf8515/parseini
+    - parsetoml: https://github.com/NimParsers/parsetoml
+    - envconfig: https://github.com/jiro4989/envconfig
+  * Useful Macros
+  * Documentation
+    - ntangle: https://github.com/OrgTangle/ntangle
+  * Tests
+    - einheit: https://github.com/jyapayne/einheit
+  * Installer
+  * Resource bundler
+  * Build system
+    - nake: https://github.com/fowlmouth/nake
+  * Package management
+    - nifty: https://github.com/h3rald/nifty
+    - plz: https://github.com/juancarlospaco/nim-pypi
+  * Continuous integration
+  * DSL
+  * Version control
+    - p4ztag_to_json: https://github.com/kaushalmodi/p4ztag_to_json
+    - semver: https://github.com/euantorano/semver.nim
+    - spdx_licenses: https://github.com/euantorano/spdx_licenses.nim
+    - [parseLicense](https://github.com/juancarlospaco/parselicense#parselicense) Parse SPDX Licenses from string to Enum at compile-time
+  * Input validation
+    - validateip: https://github.com/Akito13/nim-validateip
+  * Code analysis
+    - coco: https://github.com/samuelroy/coco
+  * Scripting
+    - nimr: https://github.com/Jeff-Ciesielski/nimr
+    - nimcr: https://github.com/PMunch/nimcr
+  * Benchmarking
+    - criterion: https://github.com/disruptek/criterion
+    - nimbench: https://github.com/ivankoster/nimbench
+    - stopwatch: https://gitlab.com/define-private-public/stopwatch
+    - timeit: https://github.com/xflywind/timeit
+    - timespec_get: https://github.com/Matceporial/nim-timespec_get
+    - golden: https://github.com/disruptek/golden
+  * External libraries integration
+    - nimgen: https://github.com/genotrance/nimgen
+
+
+## System
+  * Platform
+    - psutil: https://github.com/johnscillieri/psutil-nim
+  * Logs &amp; syslog
+    - chronicles: https://github.com/status-im/nim-chronicles
+  * Concurrent
+    - chronos: https://github.com/status-im/nim-chronos
+    * Threading
+      - weave: https://github.com/mratsim/weave
+      - shared: https://github.com/genotrance/shared
+      - timerpool: https://github.com/mikra01/timerpool
+    * Process
+    * Multiplexing
+    * Routines
+    * Scheduler
+      - nim-schedules: https://github.com/soasme/nim-schedules
+    * Message passing
+  * Publisher/Consumer
+    - cittadino: https://github.com/makingspace/cittadino
+  * Message Queues, pipes
+    - beanstalk: https://github.com/tormaroe/beanstalkd.nim
+  * Globbing
+    - glob: https://github.com/citycide/glob
+  * IO
+    - serial: https://github.com/euantorano/serial.nim
+    - nimbluez: https://github.com/Electric-Blue/NimBluez
+    * Async
+      - asyncpythonfile: https://github.com/fallingduck/asyncpythonfile-nim
+    * Sync
+  * Networking
+    - stomp: https://github.com/mahlonsmith/nim-stomp
+  * Debugging
+  * Profiler, benchmarks
+  * Users, groups and passwords management
+  * RPC
+  * Containers
+    - asyncdocker: http://tulayang.github.io/asyncdocker.html
+  * Miscellaneous
+    - stew: https://github.com/status-im/nim-stew
+    - tempdir: https://github.com/euantorano/tempdir.nim
+
+
+## Database
+  * JSON parser, generator
+  * CSV parser
+    - csvtools: https://github.com/unicredit/csvtools
+  * SQL parser
+  * Drivers
+    * SQLite
+      - SQLiteral: https://github.com/olliNiinivaara/SQLiteral
+    * MySQL
+      - asyncmysql: https://github.com/tulayang/asyncmysql
+    * PostgreSQL
+    * Others
+      - db_clickhouse: https://github.com/leonardoce/nim-clickhouse
+  * XML parser, generator
+    - xmltools: https://github.com/vegansk/xmltools
+    - xml.nim: https://github.com/ba0f3/xml.nim
+  * ORM
+    - norm: https://github.com/moigagoo/norm
+    - allographer: https://github.com/itsumura-h/nim-allographer
+    - [Gatabase](https://github.com/juancarlospaco/nim-gatabase#gatabase)
+  * NoSQL
+    - litestore: https://h3rald.com/litestore
+    - nimongo: https://github.com/SSPkrolik/nimongo
+    - redis: https://github.com/nim-lang/redis
+  * Search
+    - sonic: https://github.com/xmonader/nim-sonic-client
+
+
+## Multimedia
+  * Magic file detection
+    - imghdr: https://github.com/achesak/nim-imghdr/blob/master/imghdr.nim
+  * Audio and music
+    * Files/stream formats
+    * Midi
+    * WAV:
+      - wave: https://github.com/jiro4989/wave
+  * Image
+    * Colors:
+      - chroma: https://github.com/treeform/chroma
+    * Formats: BMP, GIF, JPEG, PNG, SVG
+      - nimBMP: https://github.com/jangko/nimBMP
+      - nimSvg: https://github.com/bluenote10/NimSvg
+      - nimPNG: https://github.com/jangko/nimPNG
+      - pnm: https://github.com/jiro4989/pnm
+      - [X-Pixmap, NetPBM (PGM, PBM)](https://github.com/juancarlospaco/xpm#x-pixmap--netpbm) 
+    * Filters and effects
+      - imageman: https://github.com/SolitudeSF/imageman
+      - perlin: https://github.com/Nycto/PerlinNim
+      - blurhash: https://github.com/SolitudeSF/blurhash
+  * Video
+    - srt: https://github.com/achesak/nim-srt
+    - subviewer: https://github.com/achesak/nim-subviewer
+    - VapourSynth.nim: https://github.com/mantielero/VapourSynth.nim
+  * Raytracing
+    - trace of radiance: https://github.com/mratsim/trace-of-radiance
+  * 3D, VR
+    - @see: Algorithms &gt; Graphics algorithms
+  * EBook
+    - biblioteca_guarrilla: https://github.com/juancarlospaco/biblioteca-guarrilla
+
+
+## Web
+  * Single page applications
+    - react: https://github.com/andreaferretti/react.nim
+    - karax: https://github.com/karaxnim/karax
+  * HTML and CSS helpers
+    - random_font_color: https://github.com/juancarlospaco/nim-random-font-color
+    * Parsing
+      - nimquery: https://github.com/GULPF/nimquery
+      - [Q](https://github.com/OpenSystemsLab/q.nim)
+    * Generator
+      - Gen: https://github.com/Adeohluwa/gen
+    * Generating
+      - rosencrantz: https://github.com/andreaferretti/rosencrantz
+  * HTTP tools: Request, Response, Encodings, Authentication, Status, Cookies
+    - httpauth: https://github.com/FedericoCeratto/nim-httpauth
+    - biscuits: https://github.com/achesak/nim-biscuits
+    * Websockets
+      - websocket: https://github.com/niv/websocket.nim
+      - ws: https://github.com/treeform/ws
+  * Templating
+    - emerald: https://flyx.github.io/emerald/
+    - moustachu: https://github.com/fenekku/moustachu
+    - mustache: https://github.com/soasme/nim-mustache
+    - templates: https://github.com/onionhammer/nim-templates
+  * CGI?
+  * Frameworks
+    - jester: https://github.com/dom96/jester
+    - prologue: https://github.com/planety/prologue
+    - Nexus: https://github.com/jfilby/nexus
+    - [NimWC](https://nimwc.org/login) https://github.com/ThomasTJdev/nim_websitecreator
+    - Basolato: https://github.com/itsumura-h/nim-basolato
+    - Starlight: https://github.com/planety/starlight
+    - Akane: https://github.com/Ethosa/akane
+
+
+## Internet
+  * URI, URL
+    - Urlly: https://github.com/treeform/urlly
+  * MIME
+  * Email
+  * SMTP
+    - easymail: https://github.com/coocheenin/easymail
+  * IMAP
+  * IRC
+  * SSL
+  * Telnet
+  * Authentication, OAuth
+  * Bot building
+    - telebot: https://github.com/ba0f3/telebot.nim
+  * Web services
+  * Webdav
+    - webdavclient: https://github.com/beshrkayali/webdavclient
+
+
+## Specific targets
+  * JavaScript
+    * Websockets
+
+
+## IoT &amp; Embedded
+  * Hardware
+    - boneIO: https://github.com/xyz32/boneIO
+  * Microcontrollers
+    - MSP430f5510 (6kB): https://gitlab.com/jalexander8717/msp430f5510-nim
+    - STM32F3 (16 kB): https://github.com/mwbrown/nim_stm32f3
+    - Arduino + Mediatek LinkIt ONE SDK: https://github.com/gokr/ardunimo
+    - Arduino ESP8266 + Flashing Nim into Arduino: https://gitlab.com/NetaLabTek/Arduimesp
+
+## Cloud
+  * Distributed systems
+  * Map, reduce
+  * Streams
+    - mangle: https://github.com/baabelfish/mangle
+  * HyperLogLog and family
+
+
+## GUI
+  * Cross-platform
+    - nimx: https://github.com/yglukhov/nimx
+    - nigui: https://github.com/trustable-code/NiGui
+    - libui: https://github.com/nim-lang/ui
+    - imgui: https://github.com/nimgl/imgui
+  * MacOS
+  * Windows
+    - wnim: https://github.com/khchen/wNim
+    - winim: https://github.com/khchen/winim
+  * GTK
+    - gintro (GTK): https://github.com/StefanSalewski/gintro
+  * QT
+    - nimqml: https://github.com/filcuc/nimqml
+  * Web
+    - fidget: https://github.com/treeform/fidget
+    - webgui: https://github.com/juancarlospaco/webgui
+  * Console/Terminal
+    - progress: https://github.com/euantorano/progress.nim
+    - NimCx: https://github.com/qqtop/NimCx
+    - dashing: https://github.com/FedericoCeratto/nim-dashing
+    - illwill: https://github.com/johnnovak/illwill
+    * Curses
+  * Forms
+  * Reports
+    - foliant: https://github.com/foliant-docs/foliant-nim
+    - nimtomd: https://github.com/ThomasTJdev/nimtomd
+    - pager: https://git.sr.ht/~reesmichael1/nim-pager
+  * Tabular
+    - terminaltables: https://github.com/xmonader/nim-terminaltables
+  * Plots
+    - nimgraphviz: https://github.com/QuinnFreedman/nimgraphviz
+    - ggplotnim: https://github.com/Vindaar/ggplotnim
+    - nim-plotly: https://github.com/brentp/nim-plotly
+    - matplotnim: https://github.com/ruivieira/matplotnim
+    - gnuplotnim: https://github.com/dvolk/gnuplot.nim
+    - graph: https://github.com/stisa/graph
+    - nimetry: https://github.com/benjif/nimetry
+    - gr.nim: https://github.com/mantielero/gr.nim
+  * Formats: PDF, Tex, RST, ePub...
+    - nimPDF: https://github.com/jangko/nimpdf
+  * Editor
+    - NEd: https://github.com/StefanSalewski/NEd
+
+
+## Games
+  * Games
+    - nim-chess4: https://github.com/StefanSalewski/nim-chess4
+    - tetris: https://github.com/Joco223/Tetris-In-Nim
+  * Engines
+    - nimgame2: https://github.com/Vladar4/nimgame2
+    - nimgl: https://github.com/lmariscal/nimgl
+    - rapid: https://github.com/liquid600pgm/rapid
+    - tinamou: https://github.com/Double-oxygeN/tinamou
+    - rod: https://github.com/yglukhov/rod
+  * Frameworks
+    - nico: https://github.com/ftsf/nico
+    - c4: https://github.com/c0ntribut0r/cat-400
+    - turn_based_game: https://github.com/JohnAD/turn_based_game
+  * Emulation
+    - nimes: https://github.com/def-/nimes
+  * Miscellaneous
+    - nasher: https://github.com/squattingmonk/nasher.nim
+    - neverwinter: https://github.com/niv/neverwinter.nim
+
+## Science
+  * Science
+    - @see: Algorithms &gt; Graphics algorithms
+    - units: https://github.com/Udiknedormin/NimUnits
+    - metric: https://github.com/mjendrusch/metric
+  * Astronomy
+    - orbits: https://github.com/treeform/orbits
+  * Mathematics
+    - @see Algorithms &amp; data structures &gt; Maths
+    - ski: https://github.com/jiro4989/ski
+    - chebyshev: https://github.com/jxy/chebyshev
+    - mathexpr: https://github.com/Yardanico/nim-mathexpr
+    - [Constants](https://github.com/juancarlospaco/nim-constants#constants) Mathematical named static constants useful for different disciplines
+    - linear algebra: https://github.com/planetis-m/manu
+  * Biology
+    - falas: https://brentp.github.io/falas/falas.html
+    - nimna: https://github.com/mjendrusch/nimna
+    - polypbren: https://github.com/guibar64/polypbren
+    * Genomic
+      - nim-hts: https://github.com/brentp/hts-nim
+      - nim-hts-tools: https://github.com/brentp/hts-nim-tools
+      - slivar: https://github.com/brentp/slivar
+  * Data science
+    - @see GUI &gt; Reports &gt; Plots
+    - arraymancer: https://mratsim.github.io/Arraymancer/
+    - NimData: https://github.com/bluenote10/NimData
+    - nimdataframe: https://github.com/qqtop/nimdataframe
+    - Datamancer: https://github.com/SciNim/Datamancer
+    - laser: https://github.com/numforge/laser
+    - nimhdf5: https://github.com/Vindaar/nimhdf5
+    - pipelines: https://github.com/calebwin/pipelines
+    - mentat: https://github.com/ruivieira/nim-mentat
+    - mpfit: https://github.com/Vindaar/nim-mpfit
+    - teafiles: https://github.com/unicredit/nim-teafiles
+  * Machine Learning
+    - arraymancer_vision: https://github.com/edubart/arraymancer-vision
+    - nlopt: https://github.com/Vindaar/nimnlopt
+    - torch: https://github.com/fragcolor-xyz/nimtorch
+    - flambeau: https://github.com/SciNim/flambeau
+    - nimfastText: https://github.com/genotrance/nimfastText
+    - lda: https://github.com/unicredit/lda
+    - libsvm: https://github.com/genotrance/libsvm
+    - opencv: https://github.com/dom96/nim-opencv
+
+
+## Vertical domains
+  * Blockchain
+    - eth: https://github.com/status-im/nim-eth
+    - nimbus: https://github.com/status-im/nimbus
+  * Geo / GIS
+    - [OpenStreetMap](https://github.com/juancarlospaco/nim-openstreetmap#nim-openstreetmap)
+    - [OpenStreetMap Nominatim](https://github.com/juancarlospaco/nim-nominatim#nim-nominatim)
+    - [OpenStreetMap Overpass](https://github.com/juancarlospaco/nim-overpass#nim-overpass)
+    - [Open Source Routing Machine for OpenStreetMap](https://github.com/juancarlospaco/nim-osrm#nim-osrm)
+    - [OpenWeatherMap](https://github.com/juancarlospaco/nim-openweathermap#nim-openweathermap)
+    - [OpenElevation](https://github.com/juancarlospaco/nim-open-elevation#nim-open-elevation)
+    - [GeoRef Argentina](https://github.com/juancarlospaco/nim-georefar#nim-georefar)
+    - [USIG Argentina](https://github.com/juancarlospaco/nim-usigar#nim-usigar)
+    - [OpenStreetCams](https://github.com/juancarlospaco/nim-openstreetcam#nim-openstreetcam) (WIP)
+  * Office applications
+  * Natural language processing
+  * Security
+  * Platform specific
+    * Linux &amp; *nix
+    * Windows
+    * OS X
+  * Tools
+  * Servers
+  * Intelligent Home
+    - nimha: https://github.com/ThomasTJdev/nim_homeassistant
+
+
+[ :arrow_up: :arrow_up: :arrow_up: :arrow_up: ](#table-of-contents &quot;Go to top&quot;)
+&quot;&quot;&quot;</span>
+nbSave()
+</code></pre>
+</section><script>
+function toggleSourceDisplay() {
+  var btn = document.getElementById("show")
+  var source = document.getElementById("source");
+  if (btn.innerHTML=="Show Source") {
+    btn.innerHTML = "Hide Source";
+    source.style.display = "block";
+  } else {
+    btn.innerHTML = "Show Source";
+    source.style.display = "none";
+  }
+}
+</script></body>
+</html>

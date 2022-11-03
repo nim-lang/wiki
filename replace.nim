@@ -1,4 +1,4 @@
-import std/[os, sequtils, strutils]
+import std/[os, sequtils, strutils, osproc]
 
 let
   nimibStart = readFile(getCurrentDir() / "nimibStart.txt")
@@ -20,3 +20,7 @@ for file in toSeq(walkFiles(workingDir / "*.md")):
       close(f)
   else:
     echo "Could not create file ", newName
+
+for file in walkFiles(workingDir / "*.nim"):
+  if execCmd( "nim c -r --hints:off " & file) != 0:
+    echo "Could not run the nimib, ", file
