@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 TODO - move this to the awesome-nim list and delete

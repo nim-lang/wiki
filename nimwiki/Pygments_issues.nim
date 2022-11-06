@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 If you see any issues with the Pygments syntax highlighting for Nimrod (what github uses) please list them here so that somebody can fix them at some point.

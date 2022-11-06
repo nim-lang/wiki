@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 Notes from meetings. Please don't read too much into these, most of these are just random ramblings between Araq and dom96.

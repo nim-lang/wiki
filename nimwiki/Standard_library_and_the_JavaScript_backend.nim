@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 The JavaScript backend can use only _some_ modules from the Standard Library. Here a list of modules known to work with the JS backend:

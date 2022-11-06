@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 ## Nim doesn't require call-site annotation for `var` parameters

@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 If you add more editor support, don't forget to add it to the [FAQ](https://nim-lang.org/faq.html) as well. 

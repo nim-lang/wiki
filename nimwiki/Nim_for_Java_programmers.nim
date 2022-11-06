@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 
@@ -48,7 +46,9 @@ Method definition | `T foo(U a, S b) {}` in class body | `method foo(obj: Obj, a
 Calling procedure | `ClassName.foo(a, b)` | `foo(a, b)`, `foo a, b`, `a.foo(b)`, `a.foo b`
 Calling method | `obj.foo(a, b)` | `foo(obj, a, b)`, `foo obj, a, b`, `obj.foo(a, b)`, `obj.foo a, b`
 Method/procedure declarations are order-agnostic | Yes | No, can use forward declarations, experimental [code reordering](https://nim-lang.org/docs/manual.html#scope-rules-code-reordering)
-String literals | `"str"`, `"""str"""` as of Java 13 | `"str"`, `"""str"""`, `foo"str"` ([raw string literals](https://nim-lang.org/docs/manual.html#lexical-analysis-raw-string-literals))
+"""
+# String literals | `"str"`, `"""str"""` as of Java 13 | `"str"`, `"""str"""`, `foo"str"` ([raw string literals](https://nim-lang.org/docs/manual.html#lexical-analysis-raw-string-literals))
+nbText:"""
 Collection literals | `new int[] {1, 2, 3}` | array: `[1, 2, 3]`, seq: `@[1, 2, 3]`, bitset: `{1, 2, 3}`, tuple: `(1, 2, 3)`, [table constructor](https://nim-lang.org/docs/manual.html#statements-and-expressions-table-constructor)
 Introduce new lexical scope | `{}`, `label: {}`, can't break (?) | `block:`, `block label:`, can break with `break label`
 Increment | `i++` | Uses `inc` proc, `inc i`

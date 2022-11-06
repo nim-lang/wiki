@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 [afl-fuzz](http://lcamtuf.coredump.cx/afl/) is quite rabid at ferreting out issues that are hard-to-impossible to find with manual testing.

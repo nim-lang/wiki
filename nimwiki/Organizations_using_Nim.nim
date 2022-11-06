@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 Nim is growing fast. This page lists the companies, organisations and individuals that are already using it or actively engaged with Nim projects. Are you using Nim at your company or for your project? Please add yourself in alphabetical order to the list under the corresponding industry!

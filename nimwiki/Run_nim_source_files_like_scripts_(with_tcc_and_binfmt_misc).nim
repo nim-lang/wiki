@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 This is a rough guide on how to make nim source files behave like scripts.  This document targets debian/ubuntu-likes; you may have to adjust for other systems.

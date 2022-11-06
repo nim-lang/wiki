@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 Macros are complex and powerful, allowing you to build the AST imperatively. So how does one build AST? It's not as hard as it sounds.

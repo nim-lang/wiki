@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 - github actions and azure pipelines are green (Usually the case these days) for the release branch 0-19, 0-20, etc

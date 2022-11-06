@@ -1,8 +1,6 @@
-import strformat, strutils
-import nimib
-import nimoji
+import nimib, nimibook
 
-nbInit
+nbInit(theme = useNimibook)
 
 nbText:"""
 The [nimscript docs](https://nim-lang.org/docs/nimscript.html) describe the nimscript API, but I needed some help on how to use it. (Note: [these docs](https://nim-lang.org/docs/nims.html) are better.)
