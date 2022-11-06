@@ -1,0 +1,9 @@
+[nimib]
+srcDir = "nimwiki"
+homeDir = "docs"
+
+[nimibook]
+language = "en"
+title = "Nim wiki"
+description = "Wiki of the Nim language compiler"
+
