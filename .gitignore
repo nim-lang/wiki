@@ -3,3 +3,4 @@ docs/
 nbook
 *.json
 *.mustache
+nimwiki/*.nim
