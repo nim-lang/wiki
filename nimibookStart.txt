@@ -1,0 +1,6 @@
+import nimib, nimibook
+import nimoji
+
+nbInit(theme = useNimibook)
+
+nbText:"""

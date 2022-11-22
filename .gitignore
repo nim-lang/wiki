@@ -1,0 +1,6 @@
+docs/
+*.log
+nbook
+*.json
+*.mustache
+nimwiki/*.nim

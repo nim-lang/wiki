@@ -245,9 +245,9 @@ proc agregarAzucar(amount = 2) =  # El valor por defecto de amount es 2, No reto
     echo a, " azucar..."
 
 case preguntar("Queres azucar con tu cafe?")
-of aSi:
+of rSi:
   agregarAzucar(3)
-of aNo:
+of rNo:
   echo "Oh, por favor usa un poco!"
   agregarAzucar()
 # No hay necesidad de un `else` aqui. Unicamente `yes` o `no` son los valores posibles.
