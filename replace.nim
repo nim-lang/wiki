@@ -1,32 +1,33 @@
 import std/[os, sequtils, strutils, osproc]
-    
+
 let workingDir = getCurrentDir() / "nimwiki"
 
-proc markdownToNimib() =
+type
+  fmtSelection = enum
+    nimib, nimibook
+
+proc markdownTo(fmt: fmtSelection = nimibook) =
+  var header: string
+  if fmt == nimib:
+    header = readFile(getCurrentDir() / "nimibStart.txt")
+  if fmt == nimibook:
+    header = readFile(getCurrentDir() / "nimibookStart.txt")
   let
-    # Select nimibStart instead of nimibookStart, for nimib only generation
-    # nimibStart = readFile(getCurrentDir() / "nimibStart.txt")
-    nimibookStart = readFile(getCurrentDir() / "nimibookStart.txt")
-    nimibStop = readFile(getCurrentDir() / "nimibStop.txt")
+    footer = readFile(getCurrentDir() / "nimibStop.txt")
     workingDir = getCurrentDir() / "nimwiki"
   for file in toSeq(walkFiles(workingDir / "*.md")):
     let fileContent = readFile(file)
     # .md -> .nim
     var newName = file.changeFileExt("nim")
     # Nim module doesn't accept hyphens -> replace with underscores
-    newName = newName.replace('-','_')
-    var f: File = nil
-    if open(f, workingDir / splitPath(newName).tail, fmWrite):
-      try:
-        echo "writing ", newName
-        # We write nimibook boilerplate
-        f.write(nimibookStart)
-        f.write(fileContent)
-        f.write(nimibStop)
-      finally:
-        close(f)
-    else:
-      echo "Could not create file ", newName
+    newName = newName.multiReplace({
+      "-":"_",
+      "(":"",
+      ")":"",
+      ":":"_"
+    })
+    newName = newName.strip(leading = true, trailing = true, chars = {'_'})
+    writeFile(workingDir / splitPath(newName).tail, header & fileContent & footer)
 
 proc nimibExecution() =
   var filenames: seq[string] = @[]
@@ -38,5 +39,7 @@ proc nimibExecution() =
 
 when isMainModule:
   # Uncomment if you want to generat nimib boilerplate instead
-  markdownToNimib()
+  markdownTo(nimibook)
+  discard execShellCmd("cp Aprende-Nim-en-5-Minutos.nim Aprende_Nim_en_5_Minutos.nim")
+
   # nimibExecution()
