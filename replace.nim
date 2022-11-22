@@ -32,7 +32,7 @@ proc markdownTo(fmt: fmtSelection = nimibook) =
 proc nimibExecution() =
   var filenames: seq[string] = @[]
   for file in walkFiles(workingDir / "*.nim"):
-    if execCmd( "nim c -r --hints:off " & file) != 0:
+    if execCmd( "nim r --hints:off " & file) != 0:
       filenames.add(file)
   for file in filenames:
     echo "Could not run the nimib, ", file
