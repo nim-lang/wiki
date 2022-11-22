@@ -40,6 +40,6 @@ proc nimibExecution() =
 when isMainModule:
   # Uncomment if you want to generat nimib boilerplate instead
   markdownTo(nimibook)
-  discard execShellCmd("cp Aprende-Nim-en-5-Minutos.nim Aprende_Nim_en_5_Minutos.nim")
+  discard execShellCmd("cp nimwiki/Aprende-Nim-en-5-Minutos.nim nimwiki/Aprende_Nim_en_5_Minutos.nim")
 
   # nimibExecution()
