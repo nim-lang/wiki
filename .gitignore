@@ -1,3 +1,5 @@
 docs/
 *.log
 nbook
+*.json
+*.mustache
